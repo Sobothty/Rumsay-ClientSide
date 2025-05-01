@@ -2,7 +2,7 @@ import { Button, Navbar, NavbarBrand, NavbarCollapse, NavbarLink, NavbarToggle }
 
 export default function NavbarPage() {
   return (
-    <Navbar fluid rounded>
+    <Navbar fluid rounded className="sticky top-0 z-50 bg-white shadow-md dark:bg-gray-900">
     <NavbarBrand href="/">
       <img src="src/assets/logo/Rumsay.png" className="ml-1.5 h-14 sm:h-18" alt="Flowbite React Logo" />
     </NavbarBrand>
