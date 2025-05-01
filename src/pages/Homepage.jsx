@@ -2,8 +2,9 @@ import { Button, Datepicker, Select } from "flowbite-react";
 
 export default function Homepage() {
   return (
-    <main className="w-full m-auto max-w-7xl h-screen bg-gray-50 px-5 md:px-10 lg:px-16">
+    <main className="w-full m-auto max-w-7xl bg-gray-50 ">
       {/* Hero Section */}
+
       <section className="w-full h-[200px] md:h-[300px] lg:h-[500px] bg-[url('src/assets/banner.jpg')] bg-cover bg-center flex items-center justify-center rounded-2xl mt-10 shadow-lg relative">
         {/* Mask/Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent rounded-2xl"></div>
@@ -47,7 +48,8 @@ export default function Homepage() {
           </div>
           <Button className="w-full border-[#118BD3] border-l-1">Search</Button>
         </div>
-      </section>
+       </section>
+
     </main>
   );
 }
