@@ -1,6 +1,6 @@
 import React from 'react'
 
-const signin = () => {
+const SignIn = () => {
   return (
     <section className="min-h-screen grid grid-cols-1 md:grid-cols-2">
     {/* Left Side - Form */}
@@ -89,4 +89,4 @@ const signin = () => {
   )
 }
 
-export default signin
+export default SignIn

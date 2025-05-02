@@ -1,15 +1,21 @@
 import Footer from "../Footer";
 import { Outlet } from "react-router-dom";
-import NavbarPage from "../Navbar"
+import NavbarPage from "../Navbar";
+import { useLocation } from "react-router-dom";
 
 const RootLayout = () => {
+  const location = useLocation();
+
+  const isHidden =
+    location.pathname === "/sign-in" || location.pathname === "/sign-up";
+
   return (
     <>
-     <NavbarPage />
+      {!isHidden && <NavbarPage />}
       <div className="Container">
         <Outlet />
       </div>
-      <Footer />
+      {!isHidden && <Footer />}
     </>
   );
 };

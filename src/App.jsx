@@ -4,6 +4,8 @@ import "./App.css";
 import RootLayout from "./components/layout/RootLayout";
 import Homepage from "./pages/Homepage";
 import About from "./pages/About";
+import SignUp from "./pages/SignUp";
+import SignIn from "./pages/SignIn";
 
 function App() {
   return (
@@ -11,7 +13,9 @@ function App() {
       <Routes>
         <Route path="/" element={<RootLayout />}>
           <Route path="/" element={<Homepage />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/about-us" element={<About />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/sign-in" element={<SignIn />} />
         </Route>
       </Routes>
     </BrowserRouter>
