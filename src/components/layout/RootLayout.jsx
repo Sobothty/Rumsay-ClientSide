@@ -7,7 +7,7 @@ const RootLayout = () => {
   const location = useLocation();
 
   const isHidden =
-    location.pathname === "/sign-in" || location.pathname === "/sign-up";
+    location.pathname === "/sign-in" || location.pathname === "/sign-up" || location.pathname === "/admin";
 
   return (
     <>
