@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { User2 } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { User2, LayoutDashboard, Settings, LogOut } from "lucide-react";
 import axios from "axios";
 
 const navLinks = [
@@ -13,7 +13,10 @@ const navLinks = [
 
 export default function NavbarPage() {
   const [open, setOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
   const activePath = location.pathname;
 
   // Auth state
@@ -47,16 +50,34 @@ export default function NavbarPage() {
     fetchProfile();
   }, [token]);
 
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setUserMenuOpen(false);
+      }
+    };
+    if (userMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [userMenuOpen]);
+
   const isAuthenticated = !!token && !!profile;
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    setProfile(null);
+    setUserMenuOpen(false);
+    navigate("/");
+  };
 
   return (
     <nav className="sticky top-4 z-50 mx-auto max-w-[1280px] min-w-[320px] sm:min-w-[640px] rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg shadow-xl border border-gray-200 dark:border-gray-800 px-6 py-3 flex items-center transition-all duration-300">
       <Link to="/" className="flex items-center gap-3">
-        <img
-          src="/Rumsay-nobg.png"
-          className="h-15 w-auto"
-          alt="Rumsay Logo"
-        />
+        <img src="/Rumsay-nobg.png" className="h-15 w-auto" alt="Rumsay Logo" />
       </Link>
       <div className="flex-1" />
       {/* Desktop nav links */}
@@ -98,11 +119,57 @@ export default function NavbarPage() {
           </>
         )}
         {isAuthenticated && profile && (
-          <div className="ml-4 flex items-center gap-2">
-            <User2 className="w-7 h-7 text-primary dark:text-white" />
-            <span className="font-semibold text-gray-700 dark:text-gray-200">
-              {profile.name || "User"}
-            </span>
+          <div
+            id="user-icon"
+            className="ml-4 flex items-center gap-2 relative cursor-pointer"
+            ref={userMenuRef}
+          >
+            <button
+              className="flex items-center gap-2 focus:outline-none"
+              onClick={() => setUserMenuOpen((prev) => !prev)}
+            >
+              <User2 className="w-7 h-7 text-primary dark:text-white transition-transform duration-200" />
+              <span className="font-semibold text-gray-700 dark:text-gray-200">
+                {profile.name || "User"}
+              </span>
+            </button>
+            {/* User dropdown menu */}
+            <div
+              className={`absolute right-0 top-12 min-w-[180px] bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 transition-all duration-300 origin-top-right ${
+                userMenuOpen
+                  ? "scale-100 opacity-100 pointer-events-auto"
+                  : "scale-95 opacity-0 pointer-events-none"
+              }`}
+              style={{
+                boxShadow: userMenuOpen
+                  ? "0 8px 32px 0 rgba(31,38,135,0.15)"
+                  : undefined,
+              }}
+            >
+              <Link
+                to="/admin"
+                className="flex items-center gap-3 px-5 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-t-xl transition-all duration-200"
+                onClick={() => setUserMenuOpen(false)}
+              >
+                <LayoutDashboard className="w-5 h-5 text-blue-500" />
+                Dashboard
+              </Link>
+              <Link
+                to="/settings"
+                className="flex items-center gap-3 px-5 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+                onClick={() => setUserMenuOpen(false)}
+              >
+                <Settings className="w-5 h-5 text-green-500" />
+                Settings
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-5 py-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-b-xl transition-all duration-200"
+              >
+                <LogOut className="w-5 h-5" />
+                Log out
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -185,11 +252,61 @@ export default function NavbarPage() {
             </>
           )}
           {isAuthenticated && profile && (
-            <div className="mt-4 flex items-center gap-2 justify-center">
-              <User2 className="w-7 h-7 text-primary dark:text-white" />
-              <span className="font-semibold text-gray-700 dark:text-gray-200">
-                {profile.name || "User"}
-              </span>
+            <div className="mt-4 flex items-center gap-2 justify-center relative">
+              <button
+                className="flex items-center gap-2 focus:outline-none"
+                onClick={() => setUserMenuOpen((prev) => !prev)}
+              >
+                <User2 className="w-7 h-7 text-primary dark:text-white transition-transform duration-200" />
+                <span className="font-semibold text-gray-700 dark:text-gray-200">
+                  {profile.name || "User"}
+                </span>
+              </button>
+              <div
+                className={`absolute right-0 top-12 min-w-[180px] bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 transition-all duration-300 origin-top-right ${
+                  userMenuOpen
+                    ? "scale-100 opacity-100 pointer-events-auto"
+                    : "scale-95 opacity-0 pointer-events-none"
+                }`}
+                style={{
+                  boxShadow: userMenuOpen
+                    ? "0 8px 32px 0 rgba(31,38,135,0.15)"
+                    : undefined,
+                }}
+              >
+                <Link
+                  to="/admin"
+                  className="flex items-center gap-3 px-5 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-t-xl transition-all duration-200"
+                  onClick={() => {
+                    setUserMenuOpen(false);
+                    setOpen(false);
+                  }}
+                >
+                  <LayoutDashboard className="w-5 h-5 text-blue-500" />
+                  Dashboard
+                </Link>
+                <Link
+                  to="/settings"
+                  className="flex items-center gap-3 px-5 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+                  onClick={() => {
+                    setUserMenuOpen(false);
+                    setOpen(false);
+                  }}
+                >
+                  <Settings className="w-5 h-5 text-green-500" />
+                  Settings
+                </Link>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-5 py-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-b-xl transition-all duration-200"
+                >
+                  <LogOut className="w-5 h-5" />
+                  Log out
+                </button>
+              </div>
             </div>
           )}
         </div>
