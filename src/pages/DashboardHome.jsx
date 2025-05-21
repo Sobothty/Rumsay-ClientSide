@@ -9,7 +9,7 @@ export default function DashboardHome() {
 
   useEffect(() => {
     axios
-      .get("http://api-hotel-production-e7ed.up.railway.app/api/users")
+      .get(`${import.meta.env.VITE_BASE_URL}/api/users`)
       .then((response) => {
         const allUsers = response.data.data;
         const filtered = allUsers.filter(

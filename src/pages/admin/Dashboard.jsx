@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Link, useLocation, Outlet } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import {
   ChartAreaIcon,
   Home,
@@ -9,6 +9,7 @@ import {
   ReceiptText,
   User2,
 } from "lucide-react";
+import axios from "axios";
 
 const sidebarItems = [
   {
@@ -35,6 +36,43 @@ const sidebarItems = [
 
 export default function AdminDashboard() {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Validate admin role
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/");
+      return;
+    }
+    // Fetch profile and check role
+    const checkRole = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data = res.data;
+        // Normalize role name to lower case for comparison
+        let role = "";
+        if (data?.data?.role?.name) {
+          role = String(data.data.role.name).toLowerCase();
+        } else if (data?.data?.role) {
+          role = String(data.data.role).toLowerCase();
+        }
+        if (role !== "admin") {
+          navigate("/");
+        }
+      } catch {
+        navigate("/");
+      }
+    };
+    checkRole();
+  }, [navigate]);
 
   const linkClass = (path) =>
     `group relative flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300 font-medium
@@ -50,11 +88,7 @@ export default function AdminDashboard() {
       <aside className="w-72 h-full p-0 bg-gradient-to-b from-white via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border-r border-gray-100 dark:border-gray-800 shadow-xl flex flex-col transition-all duration-300">
         {/* Sidebar Header */}
         <div className="px-7 py-6 border-b border-gray-100 dark:border-gray-800 flex flex-col items-center gap-2 bg-white/80 dark:bg-gray-900/80">
-          <img
-            src="/src/assets/logo/Rumsay.png"
-            alt="Logo"
-            className="h-20 w-auto"
-          />
+          <img src="/Rumsay-nobg.png" alt="Logo" className="h-20 w-auto" />
         </div>
         {/* Sidebar Navigation */}
         <nav className="flex-1 px-7 py-6">
@@ -83,7 +117,7 @@ export default function AdminDashboard() {
         <header className="flex items-center justify-between px-8 py-4 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 shadow-sm">
           <div className="flex items-center gap-4">
             <img
-              src="/src/assets/logo/Rumsay.png"
+              src="/Rumsay-nobg.png"
               alt="Logo"
               className="h-10 w-auto hidden md:block"
             />

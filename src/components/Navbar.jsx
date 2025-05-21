@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { User2 } from "lucide-react";
+import axios from "axios";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -14,14 +16,44 @@ export default function NavbarPage() {
   const location = useLocation();
   const activePath = location.pathname;
 
-  // Example: Replace with your real authentication logic
-  const isAuthenticated = false; // Set to true if user is signed in
+  // Auth state
+  const [profile, setProfile] = useState(null);
+  const token = localStorage.getItem("authToken");
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!token) {
+        setProfile(null);
+        return;
+      }
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (res.data?.data) {
+          setProfile(res.data.data);
+        } else {
+          setProfile(null);
+        }
+      } catch {
+        setProfile(null);
+      }
+    };
+    fetchProfile();
+  }, [token]);
+
+  const isAuthenticated = !!token && !!profile;
 
   return (
     <nav className="sticky top-4 z-50 mx-auto max-w-[1280px] min-w-[320px] sm:min-w-[640px] rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg shadow-xl border border-gray-200 dark:border-gray-800 px-6 py-3 flex items-center transition-all duration-300">
       <Link to="/" className="flex items-center gap-3">
         <img
-          src="src/assets/logo/Rumsay.png"
+          src="/Rumsay-nobg.png"
           className="h-15 w-auto"
           alt="Rumsay Logo"
         />
@@ -48,32 +80,32 @@ export default function NavbarPage() {
             )}
           </Link>
         ))}
-        {/* Show Sign In/Out links based on authentication */}
-        {!isAuthenticated ? (
-          <Link
-            to="/sign-in"
-            className="ml-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-400 to-primary text-white font-bold shadow hover:scale-105 active:scale-95 transition-all duration-200"
-          >
-            Sign In
-          </Link>
-        ) : (
-          <Link
-            to="/sign-out"
-            className="ml-2 px-4 py-2 rounded-full bg-gradient-to-r from-red-400 to-primary text-white font-bold shadow hover:scale-105 active:scale-95 transition-all duration-200"
-          >
-            Sign Out
-          </Link>
+        {/* Hide Sign In/Out/Up if authenticated, show user icon */}
+        {!isAuthenticated && (
+          <>
+            <Link
+              to="/sign-in"
+              className="ml-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-400 to-primary text-white font-bold shadow hover:scale-105 active:scale-95 transition-all duration-200"
+            >
+              Sign In
+            </Link>
+            <Link
+              to="/sign-up"
+              className="ml-4 px-6 py-2 rounded-full bg-gradient-to-r from-primary to-blue-500 text-white font-bold shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+            >
+              Sign Up
+            </Link>
+          </>
+        )}
+        {isAuthenticated && profile && (
+          <div className="ml-4 flex items-center gap-2">
+            <User2 className="w-7 h-7 text-primary dark:text-white" />
+            <span className="font-semibold text-gray-700 dark:text-gray-200">
+              {profile.name || "User"}
+            </span>
+          </div>
         )}
       </div>
-      {/* Sign Up button (hidden if authenticated) */}
-      {!isAuthenticated && (
-        <Link
-          to="/sign-up"
-          className="ml-4 px-6 py-2 rounded-full bg-gradient-to-r from-primary to-blue-500 text-white font-bold shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
-        >
-          Sign Up
-        </Link>
-      )}
       {/* Mobile menu toggle */}
       <button
         type="button"
@@ -133,33 +165,32 @@ export default function NavbarPage() {
               )}
             </Link>
           ))}
-          {/* Show Sign In/Out links based on authentication */}
-          {!isAuthenticated ? (
-            <Link
-              to="/sign-in"
-              className="mt-2 px-6 py-2 rounded-full bg-gradient-to-r from-blue-400 to-primary text-white font-bold shadow hover:scale-105 active:scale-95 transition-all duration-200 text-center"
-              onClick={() => setOpen(false)}
-            >
-              Sign In
-            </Link>
-          ) : (
-            <Link
-              to="/sign-out"
-              className="mt-2 px-6 py-2 rounded-full bg-gradient-to-r from-red-400 to-primary text-white font-bold shadow hover:scale-105 active:scale-95 transition-all duration-200 text-center"
-              onClick={() => setOpen(false)}
-            >
-              Sign Out
-            </Link>
-          )}
-          {/* Sign Up button (hidden if authenticated) */}
+          {/* Hide Sign In/Out/Up if authenticated, show user icon */}
           {!isAuthenticated && (
-            <Link
-              to="/sign-up"
-              className="mt-2 px-6 py-2 rounded-full bg-gradient-to-r from-primary to-blue-500 text-white font-bold shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 text-center"
-              onClick={() => setOpen(false)}
-            >
-              Sign Up
-            </Link>
+            <>
+              <Link
+                to="/sign-in"
+                className="mt-2 px-6 py-2 rounded-full bg-gradient-to-r from-blue-400 to-primary text-white font-bold shadow hover:scale-105 active:scale-95 transition-all duration-200 text-center"
+                onClick={() => setOpen(false)}
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/sign-up"
+                className="mt-2 px-6 py-2 rounded-full bg-gradient-to-r from-primary to-blue-500 text-white font-bold shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 text-center"
+                onClick={() => setOpen(false)}
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
+          {isAuthenticated && profile && (
+            <div className="mt-4 flex items-center gap-2 justify-center">
+              <User2 className="w-7 h-7 text-primary dark:text-white" />
+              <span className="font-semibold text-gray-700 dark:text-gray-200">
+                {profile.name || "User"}
+              </span>
+            </div>
           )}
         </div>
       </div>
