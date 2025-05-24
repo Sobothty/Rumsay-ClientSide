@@ -1,41 +1,170 @@
-import React, { useState } from "react";
-
-// Dummy data for room types (replace with API data as needed)
-const roomTypes = [
-  {
-    type: "Regular",
-    description: "Affordable comfort for everyday travelers.",
-    color: "from-blue-100 to-blue-300",
-    icon: "🛏️",
-  },
-  {
-    type: "VIP",
-    description: "Exclusive rooms with premium amenities.",
-    color: "from-purple-100 to-purple-300",
-    icon: "👑",
-  },
-  {
-    type: "Premium",
-    description: "Luxury experience with top-tier service.",
-    color: "from-yellow-100 to-yellow-300",
-    icon: "🌟",
-  },
-];
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 
 const AllRoom = () => {
-      const [selectedType, setSelectedType] = useState("Regular");
+  const [selectedType, setSelectedType] = useState("Regular");
+  const [rooms, setRooms] = useState([]);
+  const [roomTypes, setRoomTypes] = useState([]); // fetch from API
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [editRoom, setEditRoom] = useState(null);
+  const [form, setForm] = useState({
+    room_number: "",
+    desc: "",
+    room_type_id: "",
+    price: "",
+    is_active: true,
+  });
+  const [error, setError] = useState("");
 
-  // Placeholder for rooms (replace with API call/filter by selectedType)
-  const rooms = [
-    { id: 1, name: "Room 101", type: "Regular" },
-    { id: 2, name: "Room 102", type: "Regular" },
-    { id: 3, name: "VIP Suite 1", type: "VIP" },
-    { id: 4, name: "Premium Suite 1", type: "Premium" },
-    { id: 5, name: "VIP Suite 2", type: "VIP" },
-    { id: 6, name: "Premium Suite 2", type: "Premium" },
-  ];
+  // Fetch all room types and rooms from API
+  useEffect(() => {
+    setLoading(true);
+    axios.get(`${import.meta.env.VITE_BASE_URL}/api/room-types`).then((res) => {
+      setRoomTypes(Array.isArray(res.data.data) ? res.data.data : []);
+      // Set default selectedType to first type if available
+      if (res.data.data && res.data.data.length > 0) {
+        setSelectedType(res.data.data[0].type);
+      }
+    });
 
-  const filteredRooms = rooms.filter((room) => room.type === selectedType);
+    axios
+      .get(`${import.meta.env.VITE_BASE_URL}/api/rooms`)
+      .then((res) => {
+        setRooms(Array.isArray(res.data.data) ? res.data.data : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setRooms([]);
+        setLoading(false);
+      });
+  }, []);
+
+  // Filter rooms by selected type
+  const filteredRooms = rooms.filter(
+    (room) => room.room_type?.type === selectedType
+  );
+
+  // Handle open modal for create/edit
+  const openModal = (room = null) => {
+    setError("");
+    setEditRoom(room);
+    if (room) {
+      setForm({
+        room_number: room.room_number || "",
+        desc: room.desc || "",
+        room_type_id: room.room_type?.id || "",
+        price: room.room_type?.price || "",
+        is_active: room.is_active ?? true,
+      });
+    } else {
+      // Default to selected type's id
+      const selectedRoomType = roomTypes.find((rt) => rt.type === selectedType);
+      setForm({
+        room_number: "",
+        desc: "",
+        room_type_id: selectedRoomType ? selectedRoomType.id : "",
+        price: selectedRoomType ? selectedRoomType.price : "",
+        is_active: true,
+      });
+    }
+    setShowModal(true);
+  };
+
+  // Handle form input change
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    if (name === "room_type_id") {
+      // When room type changes, update price accordingly
+      const selectedRoomType = roomTypes.find((rt) => String(rt.id) === value);
+      setForm((prev) => ({
+        ...prev,
+        room_type_id: value,
+        price: selectedRoomType ? selectedRoomType.price : "",
+      }));
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+      }));
+    }
+  };
+
+  // Handle create or update room
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    try {
+      if (editRoom) {
+        // Update
+        const payload = {
+          room_number: form.room_number,
+          room_type_id: form.room_type_id,
+          desc: form.desc,
+        };
+        await fetch(
+          `${import.meta.env.VITE_BASE_URL}/api/rooms/${editRoom.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+            body: JSON.stringify(payload),
+          }
+        );
+        // Refresh room list
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/rooms`);
+        const data = await res.json();
+        setRooms(Array.isArray(data.data) ? data.data : []);
+        setShowModal(false);
+      } else {
+        // Create
+        const payload = {
+          room_number: form.room_number,
+          room_type_id: form.room_type_id,
+          desc: form.desc,
+        };
+        await fetch(`${import.meta.env.VITE_BASE_URL}/api/admin/rooms`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+          body: JSON.stringify(payload),
+        });
+        // Refresh room list
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/rooms`);
+        const data = await res.json();
+        setRooms(Array.isArray(data.data) ? data.data : []);
+        setShowModal(false);
+      }
+    } catch (err) {
+      setError("Failed to save room. Please check your input.");
+    }
+  };
+
+  // Handle delete room
+  const handleDelete = async (roomId) => {
+    if (!window.confirm("Are you sure you want to delete this room?")) return;
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/api/rooms/${roomId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+      setRooms((prev) => prev.filter((room) => room.id !== roomId));
+    } catch (err) {
+      alert(
+        err.response?.data?.message ||
+          "Failed to delete room. Please try again."
+      );
+    }
+  };
 
   return (
     <div className="max-w-5xl mx-auto py-8 px-4">
@@ -44,47 +173,201 @@ const AllRoom = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
         {roomTypes.map((rt) => (
           <button
-            key={rt.type}
-            className={`flex flex-col items-center p-6 rounded-2xl shadow-lg bg-gradient-to-br ${
-              rt.color
-            } transition-all duration-300 hover:scale-105 border-2 ${
+            key={rt.id}
+            className={`flex flex-col items-center p-6 rounded-2xl shadow-lg bg-gradient-to-br from-blue-100 to-blue-300 transition-all duration-300 hover:scale-105 border-2 ${
               selectedType === rt.type
                 ? "border-primary ring-2 ring-primary/30"
                 : "border-transparent"
             }`}
             onClick={() => setSelectedType(rt.type)}
           >
-            <span className="text-4xl mb-2">{rt.icon}</span>
+            <span className="text-4xl mb-2">🛏️</span>
             <span className="text-lg font-semibold">{rt.type}</span>
             <span className="text-sm text-gray-600 mt-1 text-center">
-              {rt.description}
+              {rt.desc || rt.description}
             </span>
           </button>
         ))}
       </div>
       {/* Room List */}
       <div className="bg-white dark:bg-gray-900 rounded-xl shadow p-6 transition-all duration-300">
-        <h2 className="text-xl font-semibold mb-4">{selectedType} Rooms</h2>
-        {filteredRooms.length === 0 ? (
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">{selectedType} Rooms</h2>
+          <button
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg shadow hover:bg-blue-700 transition"
+            onClick={() => openModal()}
+          >
+            <Plus size={18} /> Add Room
+          </button>
+        </div>
+        {loading ? (
+          <div className="text-center py-8 text-gray-500">Loading...</div>
+        ) : filteredRooms.length === 0 ? (
           <div className="text-gray-500 text-center py-8">
             No rooms available for this type.
           </div>
         ) : (
-          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {filteredRooms.map((room) => (
-              <li
-                key={room.id}
-                className="p-4 rounded-lg bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 shadow hover:shadow-lg transition"
-              >
-                <div className="font-bold text-primary">{room.name}</div>
-                <div className="text-xs text-gray-500 mt-1">
-                  {room.type} Class
-                </div>
-              </li>
-            ))}
-          </ul>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white dark:bg-gray-900 rounded-lg">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-left text-gray-600 dark:text-gray-300">
+                    Room Number
+                  </th>
+                  <th className="px-4 py-2 text-left text-gray-600 dark:text-gray-300">
+                    Description
+                  </th>
+                  <th className="px-4 py-2 text-left text-gray-600 dark:text-gray-300">
+                    Price
+                  </th>
+                  <th className="px-4 py-2 text-left text-gray-600 dark:text-gray-300">
+                    Status
+                  </th>
+                  <th className="px-4 py-2"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRooms.map((room) => (
+                  <tr
+                    key={room.id}
+                    className="transition-colors duration-300 hover:bg-blue-50 dark:hover:bg-gray-800"
+                  >
+                    <td className="px-4 py-2 font-semibold">
+                      {room.room_number}
+                    </td>
+                    <td className="px-4 py-2">{room.desc}</td>
+                    <td className="px-4 py-2">
+                      {room.room_type?.price ? `$${room.room_type.price}` : "-"}
+                    </td>
+                    <td className="px-4 py-2">
+                      {room.is_active ? (
+                        <span className="inline-block px-2 py-1 text-xs font-semibold rounded bg-green-100 text-green-700">
+                          Active
+                        </span>
+                      ) : (
+                        <span className="inline-block px-2 py-1 text-xs font-semibold rounded bg-red-100 text-red-700">
+                          Inactive
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2 flex gap-2">
+                      <button
+                        className="p-2 rounded hover:bg-blue-100 dark:hover:bg-blue-900"
+                        onClick={() => openModal(room)}
+                        title="Edit"
+                      >
+                        <Pencil size={18} className="text-blue-600" />
+                      </button>
+                      <button
+                        className="p-2 rounded hover:bg-red-100 dark:hover:bg-red-900"
+                        onClick={() => handleDelete(room.id)}
+                        title="Delete"
+                      >
+                        <Trash2 size={18} className="text-red-600" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
+      {/* Modal for Create/Edit Room */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl p-8 w-full max-w-md relative">
+            <button
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              onClick={() => setShowModal(false)}
+            >
+              ×
+            </button>
+            <h3 className="text-xl font-bold mb-4">
+              {editRoom ? "Edit Room" : "Add Room"}
+            </h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Room Number
+                </label>
+                <input
+                  type="text"
+                  name="room_number"
+                  value={form.room_number}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Description
+                </label>
+                <textarea
+                  name="desc"
+                  value={form.desc}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
+                  rows={2}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Room Type
+                </label>
+                <select
+                  name="room_type_id"
+                  value={form.room_type_id}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
+                  required
+                >
+                  {roomTypes.map((rt) => (
+                    <option key={rt.id} value={rt.id}>
+                      {rt.type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Price</label>
+                <input
+                  type="number"
+                  name="price"
+                  value={form.price}
+                  readOnly
+                  disabled
+                  className="w-full px-3 py-2 border rounded-lg outline-none bg-gray-100 dark:bg-gray-800 text-gray-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Status</label>
+                <input
+                  type="text"
+                  value={form.is_active ? "Active" : "Inactive"}
+                  readOnly
+                  disabled
+                  className="w-full px-3 py-2 border rounded-lg outline-none bg-gray-100 dark:bg-gray-800 text-gray-500"
+                />
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  className="w-full py-2 bg-primary text-white rounded-lg font-bold hover:bg-blue-700 transition"
+                  disabled={loading}
+                >
+                  {editRoom ? "Update Room" : "Create Room"}
+                </button>
+              </div>
+              {error && (
+                <div className="text-red-500 text-sm text-center">{error}</div>
+              )}
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -9,6 +9,7 @@ import SignIn from "./pages/auth/SignIn";
 import AdminDashboard from "./pages/admin/Dashboard";
 import DashboardHome from "./pages/admin/page/DashboardHome";
 import AllRoom from "./pages/admin/page/AllRoom";
+import  RoomTypes from "./pages/admin/page/RoomTypes";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="admin" element={<AdminDashboard />}>
           <Route index element={<DashboardHome />} />
           <Route path="rooms" element={<AllRoom />} />
+          <Route path="room-types" element={<RoomTypes />} />
         </Route>
       </Routes>
     </BrowserRouter>

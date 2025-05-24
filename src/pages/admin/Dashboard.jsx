@@ -8,6 +8,7 @@ import {
   Calendar,
   ReceiptText,
   User2,
+  BedDouble,
 } from "lucide-react";
 import axios from "axios";
 
@@ -21,6 +22,11 @@ const sidebarItems = [
     name: "All Rooms",
     icons: <Home className="w-5 h-5" />,
     href: "/admin/rooms",
+  },
+  {
+    name: "All Rooms Types",
+    icons: <BedDouble className="w-5 h-5" />,
+    href: "/admin/room-types",
   },
   {
     name: "Reservations",
