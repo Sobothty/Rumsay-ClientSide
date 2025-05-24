@@ -6,16 +6,25 @@ import Homepage from "./pages/Homepage";
 import About from "./pages/About";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
+import AdminDashboard from "./pages/admin/Dashboard";
+import DashboardHome from "./pages/DashboardHome";
+import AllRoom from "./pages/AllRoom";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public pages with RootLayout (navbar/footer) */}
         <Route path="/" element={<RootLayout />}>
-          <Route path="/" element={<Homepage />} />
-          <Route path="/about-us" element={<About />} />
-          <Route path="/sign-up" element={<SignUp />} />
-          <Route path="/sign-in" element={<SignIn />} />
+          <Route index element={<Homepage />} />
+          <Route path="about-us" element={<About />} />
+          <Route path="sign-up" element={<SignUp />} />
+          <Route path="sign-in" element={<SignIn />} />
+        </Route>
+        {/* Admin pages without RootLayout (no navbar/footer) */}
+        <Route path="admin" element={<AdminDashboard />}>
+          <Route index element={<DashboardHome />} />
+          <Route path="rooms" element={<AllRoom />} />
         </Route>
       </Routes>
     </BrowserRouter>
