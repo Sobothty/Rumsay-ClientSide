@@ -7,7 +7,7 @@ export default function NavbarPage() {
       <img src="src/assets/logo/Rumsay.png" className="ml-1.5 h-14 sm:h-18" alt="Flowbite React Logo" />
     </NavbarBrand>
     <div className="flex gap-2 md:order-2">
-      <Button className="bg-primary" href="/sign-up">Sign Up</Button>
+      <Button className="bg-primary" href="/sign-up  jj">Sign Up</Button>
       <NavbarToggle />
     </div>
     <NavbarCollapse>
