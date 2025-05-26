@@ -154,181 +154,198 @@ const RoomTypes = () => {
   return (
     <div className="max-w-6xl mx-auto py-8 px-4">
       <h1 className="text-2xl font-bold mb-6">Room Types</h1>
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow p-6 transition-all duration-300">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">All Room Types</h2>
-          <button
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg shadow hover:bg-blue-700 transition"
-            onClick={() => openModal()}
-          >
-            <Plus size={18} /> Add Type
-          </button>
+      {/* Loading spinner */}
+      {loading ? (
+        <div className="flex justify-center items-center py-16">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-primary border-solid"></div>
         </div>
-        {loading ? (
-          <div className="text-center py-8 text-gray-500">Loading...</div>
-        ) : roomTypes.length === 0 ? (
-          <div className="text-gray-500 text-center py-8">
-            No room types found.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {roomTypes.map((rt) => (
-              <div
-                key={rt.id}
-                className="flex flex-col bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg p-5 relative group transition hover:scale-[1.02]"
+      ) : (
+        <>
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow p-6 transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">All Room Types</h2>
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg shadow hover:bg-blue-700 transition"
+                onClick={() => openModal()}
               >
-                <div className="flex items-center gap-4 mb-3">
-                  <div className="w-20 h-20 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-gray-700">
-                    {rt.image ? (
-                      <img
-                        src={rt.image_url}
-                        alt={rt.type}
-                        className="object-cover w-full h-full"
-                      />
-                    ) : (
-                      <LucideImage size={40} className="text-gray-400" />
+                <Plus size={18} /> Add Type
+              </button>
+            </div>
+            {loading ? (
+              <div className="text-center py-8 text-gray-500">Loading...</div>
+            ) : roomTypes.length === 0 ? (
+              <div className="text-gray-500 text-center py-8">
+                No room types found.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {roomTypes.map((rt) => (
+                  <div
+                    key={rt.id}
+                    className="flex flex-col bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg p-5 relative group transition hover:scale-[1.02]"
+                  >
+                    <div className="flex items-center gap-4 mb-3">
+                      <div className="w-20 h-20 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-gray-700">
+                        {rt.image ? (
+                          <img
+                            src={rt.image_url}
+                            alt={rt.type}
+                            className="object-cover w-full h-full"
+                          />
+                        ) : (
+                          <LucideImage size={40} className="text-gray-400" />
+                        )}
+                      </div>
+                      <div>
+                        <div className="text-xl font-bold text-primary dark:text-blue-200">
+                          {rt.type}
+                        </div>
+                        <div className="text-gray-500 dark:text-gray-300 text-sm mt-1">
+                          {rt.desc}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-4 mt-2">
+                      <div className="flex-1">
+                        <div className="text-xs text-gray-500">Price</div>
+                        <div className="font-semibold text-blue-700 dark:text-blue-200">
+                          {rt.price ? `฿${rt.price}` : "-"}
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-xs text-gray-500">Capacity</div>
+                        <div className="font-semibold">{rt.capacity}</div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          className="p-2 rounded hover:bg-blue-100 dark:hover:bg-blue-900"
+                          onClick={() => openModal(rt)}
+                          title="Edit"
+                        >
+                          <Pencil size={18} className="text-blue-600" />
+                        </button>
+                        <button
+                          className="p-2 rounded hover:bg-red-100 dark:hover:bg-red-900"
+                          onClick={() => handleDelete(rt.id)}
+                          title="Delete"
+                        >
+                          <Trash2 size={18} className="text-red-600" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          {/* Modal for Create/Edit Room Type */}
+          {showModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+              <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl p-8 w-full max-w-md relative">
+                <button
+                  className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                  onClick={() => setShowModal(false)}
+                >
+                  ×
+                </button>
+                <h3 className="text-xl font-bold mb-4">
+                  {editType ? "Edit Room Type" : "Add Room Type"}
+                </h3>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Type
+                    </label>
+                    <input
+                      type="text"
+                      name="type"
+                      value={form.type}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Price
+                    </label>
+                    <input
+                      type="number"
+                      name="price"
+                      value={form.price}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
+                      min={0}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Capacity
+                    </label>
+                    <input
+                      type="number"
+                      name="capacity"
+                      value={form.capacity}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
+                      min={1}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Description
+                    </label>
+                    <textarea
+                      name="desc"
+                      value={form.desc}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
+                      rows={2}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Image
+                    </label>
+                    <input
+                      type="file"
+                      name="image"
+                      accept="image/*"
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
+                    />
+                    {form.image && typeof form.image === "object" && (
+                      <div className="mt-2">
+                        <img
+                          src={URL.createObjectURL(form.image)}
+                          alt="Preview"
+                          className="h-20 rounded-lg object-cover"
+                        />
+                      </div>
                     )}
                   </div>
                   <div>
-                    <div className="text-xl font-bold text-primary dark:text-blue-200">
-                      {rt.type}
-                    </div>
-                    <div className="text-gray-500 dark:text-gray-300 text-sm mt-1">
-                      {rt.desc}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex gap-4 mt-2">
-                  <div className="flex-1">
-                    <div className="text-xs text-gray-500">Price</div>
-                    <div className="font-semibold text-blue-700 dark:text-blue-200">
-                      {rt.price ? `฿${rt.price}` : "-"}
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-xs text-gray-500">Capacity</div>
-                    <div className="font-semibold">{rt.capacity}</div>
-                  </div>
-                  <div className="flex items-center gap-2">
                     <button
-                      className="p-2 rounded hover:bg-blue-100 dark:hover:bg-blue-900"
-                      onClick={() => openModal(rt)}
-                      title="Edit"
+                      type="submit"
+                      className="w-full py-2 bg-primary text-white rounded-lg font-bold hover:bg-blue-700 transition"
+                      disabled={loading}
                     >
-                      <Pencil size={18} className="text-blue-600" />
-                    </button>
-                    <button
-                      className="p-2 rounded hover:bg-red-100 dark:hover:bg-red-900"
-                      onClick={() => handleDelete(rt.id)}
-                      title="Delete"
-                    >
-                      <Trash2 size={18} className="text-red-600" />
+                      {editType ? "Update Type" : "Create Type"}
                     </button>
                   </div>
-                </div>
+                  {error && (
+                    <div className="text-red-500 text-sm text-center">
+                      {error}
+                    </div>
+                  )}
+                </form>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
-      {/* Modal for Create/Edit Room Type */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl p-8 w-full max-w-md relative">
-            <button
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-              onClick={() => setShowModal(false)}
-            >
-              ×
-            </button>
-            <h3 className="text-xl font-bold mb-4">
-              {editType ? "Edit Room Type" : "Add Room Type"}
-            </h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Type</label>
-                <input
-                  type="text"
-                  name="type"
-                  value={form.type}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Price</label>
-                <input
-                  type="number"
-                  name="price"
-                  value={form.price}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
-                  min={0}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Capacity
-                </label>
-                <input
-                  type="number"
-                  name="capacity"
-                  value={form.capacity}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
-                  min={1}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Description
-                </label>
-                <textarea
-                  name="desc"
-                  value={form.desc}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
-                  rows={2}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Image</label>
-                <input
-                  type="file"
-                  name="image"
-                  accept="image/*"
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
-                />
-                {form.image && typeof form.image === "object" && (
-                  <div className="mt-2">
-                    <img
-                      src={URL.createObjectURL(form.image)}
-                      alt="Preview"
-                      className="h-20 rounded-lg object-cover"
-                    />
-                  </div>
-                )}
-              </div>
-              <div>
-                <button
-                  type="submit"
-                  className="w-full py-2 bg-primary text-white rounded-lg font-bold hover:bg-blue-700 transition"
-                  disabled={loading}
-                >
-                  {editType ? "Update Type" : "Create Type"}
-                </button>
-              </div>
-              {error && (
-                <div className="text-red-500 text-sm text-center">{error}</div>
-              )}
-            </form>
-          </div>
-        </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

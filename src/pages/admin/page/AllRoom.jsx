@@ -169,204 +169,221 @@ const AllRoom = () => {
   return (
     <div className="max-w-5xl mx-auto py-8 px-4">
       <h1 className="text-2xl font-bold mb-6">All Room Types</h1>
-      {/* Room Type Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-        {roomTypes.map((rt) => (
-          <button
-            key={rt.id}
-            className={`flex flex-col items-center p-6 rounded-2xl shadow-lg bg-gradient-to-br from-blue-100 to-blue-300 transition-all duration-300 hover:scale-105 border-2 ${
-              selectedType === rt.type
-                ? "border-primary ring-2 ring-primary/30"
-                : "border-transparent"
-            }`}
-            onClick={() => setSelectedType(rt.type)}
-          >
-            <span className="text-4xl mb-2">🛏️</span>
-            <span className="text-lg font-semibold">{rt.type}</span>
-            <span className="text-sm text-gray-600 mt-1 text-center">
-              {rt.desc || rt.description}
-            </span>
-          </button>
-        ))}
-      </div>
-      {/* Room List */}
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow p-6 transition-all duration-300">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">{selectedType} Rooms</h2>
-          <button
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg shadow hover:bg-blue-700 transition"
-            onClick={() => openModal()}
-          >
-            <Plus size={18} /> Add Room
-          </button>
+      {/* Loading spinner */}
+      {loading ? (
+        <div className="flex justify-center items-center py-16">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-primary border-solid"></div>
         </div>
-        {loading ? (
-          <div className="text-center py-8 text-gray-500">Loading...</div>
-        ) : filteredRooms.length === 0 ? (
-          <div className="text-gray-500 text-center py-8">
-            No rooms available for this type.
+      ) : (
+        <>
+          {/* Room Type Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+            {roomTypes.map((rt) => (
+              <button
+                key={rt.id}
+                className={`flex flex-col items-center p-6 rounded-2xl shadow-lg bg-gradient-to-br from-blue-100 to-blue-300 transition-all duration-300 hover:scale-105 border-2 ${
+                  selectedType === rt.type
+                    ? "border-primary ring-2 ring-primary/30"
+                    : "border-transparent"
+                }`}
+                onClick={() => setSelectedType(rt.type)}
+              >
+                <span className="text-4xl mb-2">🛏️</span>
+                <span className="text-lg font-semibold">{rt.type}</span>
+                <span className="text-sm text-gray-600 mt-1 text-center">
+                  {rt.desc || rt.description}
+                </span>
+              </button>
+            ))}
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white dark:bg-gray-900 rounded-lg">
-              <thead>
-                <tr>
-                  <th className="px-4 py-2 text-left text-gray-600 dark:text-gray-300">
-                    Room Number
-                  </th>
-                  <th className="px-4 py-2 text-left text-gray-600 dark:text-gray-300">
-                    Description
-                  </th>
-                  <th className="px-4 py-2 text-left text-gray-600 dark:text-gray-300">
-                    Price
-                  </th>
-                  <th className="px-4 py-2 text-left text-gray-600 dark:text-gray-300">
-                    Status
-                  </th>
-                  <th className="px-4 py-2"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredRooms.map((room) => (
-                  <tr
-                    key={room.id}
-                    className="transition-colors duration-300 hover:bg-blue-50 dark:hover:bg-gray-800"
-                  >
-                    <td className="px-4 py-2 font-semibold">
-                      {room.room_number}
-                    </td>
-                    <td className="px-4 py-2">{room.desc}</td>
-                    <td className="px-4 py-2">
-                      {room.room_type?.price ? `$${room.room_type.price}` : "-"}
-                    </td>
-                    <td className="px-4 py-2">
-                      {room.is_active ? (
-                        <span className="inline-block px-2 py-1 text-xs font-semibold rounded bg-green-100 text-green-700">
-                          Active
-                        </span>
-                      ) : (
-                        <span className="inline-block px-2 py-1 text-xs font-semibold rounded bg-red-100 text-red-700">
-                          Inactive
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-2 flex gap-2">
-                      <button
-                        className="p-2 rounded hover:bg-blue-100 dark:hover:bg-blue-900"
-                        onClick={() => openModal(room)}
-                        title="Edit"
+          {/* Room List */}
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow p-6 transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">{selectedType} Rooms</h2>
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg shadow hover:bg-blue-700 transition"
+                onClick={() => openModal()}
+              >
+                <Plus size={18} /> Add Room
+              </button>
+            </div>
+            {loading ? (
+              <div className="text-center py-8 text-gray-500">Loading...</div>
+            ) : filteredRooms.length === 0 ? (
+              <div className="text-gray-500 text-center py-8">
+                No rooms available for this type.
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-white dark:bg-gray-900 rounded-lg">
+                  <thead>
+                    <tr>
+                      <th className="px-4 py-2 text-left text-gray-600 dark:text-gray-300">
+                        Room Number
+                      </th>
+                      <th className="px-4 py-2 text-left text-gray-600 dark:text-gray-300">
+                        Description
+                      </th>
+                      <th className="px-4 py-2 text-left text-gray-600 dark:text-gray-300">
+                        Price
+                      </th>
+                      <th className="px-4 py-2 text-left text-gray-600 dark:text-gray-300">
+                        Status
+                      </th>
+                      <th className="px-4 py-2"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredRooms.map((room) => (
+                      <tr
+                        key={room.id}
+                        className="transition-colors duration-300 hover:bg-blue-50 dark:hover:bg-gray-800"
                       >
-                        <Pencil size={18} className="text-blue-600" />
-                      </button>
-                      <button
-                        className="p-2 rounded hover:bg-red-100 dark:hover:bg-red-900"
-                        onClick={() => handleDelete(room.id)}
-                        title="Delete"
-                      >
-                        <Trash2 size={18} className="text-red-600" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                        <td className="px-4 py-2 font-semibold">
+                          {room.room_number}
+                        </td>
+                        <td className="px-4 py-2">{room.desc}</td>
+                        <td className="px-4 py-2">
+                          {room.room_type?.price
+                            ? `$${room.room_type.price}`
+                            : "-"}
+                        </td>
+                        <td className="px-4 py-2">
+                          {room.is_active ? (
+                            <span className="inline-block px-2 py-1 text-xs font-semibold rounded bg-green-100 text-green-700">
+                              Active
+                            </span>
+                          ) : (
+                            <span className="inline-block px-2 py-1 text-xs font-semibold rounded bg-red-100 text-red-700">
+                              Inactive
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-2 flex gap-2">
+                          <button
+                            className="p-2 rounded hover:bg-blue-100 dark:hover:bg-blue-900"
+                            onClick={() => openModal(room)}
+                            title="Edit"
+                          >
+                            <Pencil size={18} className="text-blue-600" />
+                          </button>
+                          <button
+                            className="p-2 rounded hover:bg-red-100 dark:hover:bg-red-900"
+                            onClick={() => handleDelete(room.id)}
+                            title="Delete"
+                          >
+                            <Trash2 size={18} className="text-red-600" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-        )}
-      </div>
-      {/* Modal for Create/Edit Room */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl p-8 w-full max-w-md relative">
-            <button
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-              onClick={() => setShowModal(false)}
-            >
-              ×
-            </button>
-            <h3 className="text-xl font-bold mb-4">
-              {editRoom ? "Edit Room" : "Add Room"}
-            </h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Room Number
-                </label>
-                <input
-                  type="text"
-                  name="room_number"
-                  value={form.room_number}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Description
-                </label>
-                <textarea
-                  name="desc"
-                  value={form.desc}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
-                  rows={2}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Room Type
-                </label>
-                <select
-                  name="room_type_id"
-                  value={form.room_type_id}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
-                  required
-                >
-                  {roomTypes.map((rt) => (
-                    <option key={rt.id} value={rt.id}>
-                      {rt.type}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Price</label>
-                <input
-                  type="number"
-                  name="price"
-                  value={form.price}
-                  readOnly
-                  disabled
-                  className="w-full px-3 py-2 border rounded-lg outline-none bg-gray-100 dark:bg-gray-800 text-gray-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Status</label>
-                <input
-                  type="text"
-                  value={form.is_active ? "Active" : "Inactive"}
-                  readOnly
-                  disabled
-                  className="w-full px-3 py-2 border rounded-lg outline-none bg-gray-100 dark:bg-gray-800 text-gray-500"
-                />
-              </div>
-              <div>
+          {/* Modal for Create/Edit Room */}
+          {showModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+              <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl p-8 w-full max-w-md relative">
                 <button
-                  type="submit"
-                  className="w-full py-2 bg-primary text-white rounded-lg font-bold hover:bg-blue-700 transition"
-                  disabled={loading}
+                  className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                  onClick={() => setShowModal(false)}
                 >
-                  {editRoom ? "Update Room" : "Create Room"}
+                  ×
                 </button>
+                <h3 className="text-xl font-bold mb-4">
+                  {editRoom ? "Edit Room" : "Add Room"}
+                </h3>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Room Number
+                    </label>
+                    <input
+                      type="text"
+                      name="room_number"
+                      value={form.room_number}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Description
+                    </label>
+                    <textarea
+                      name="desc"
+                      value={form.desc}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
+                      rows={2}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Room Type
+                    </label>
+                    <select
+                      name="room_type_id"
+                      value={form.room_type_id}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
+                      required
+                    >
+                      {roomTypes.map((rt) => (
+                        <option key={rt.id} value={rt.id}>
+                          {rt.type}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Price
+                    </label>
+                    <input
+                      type="number"
+                      name="price"
+                      value={form.price}
+                      readOnly
+                      disabled
+                      className="w-full px-3 py-2 border rounded-lg outline-none bg-gray-100 dark:bg-gray-800 text-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Status
+                    </label>
+                    <input
+                      type="text"
+                      value={form.is_active ? "Active" : "Inactive"}
+                      readOnly
+                      disabled
+                      className="w-full px-3 py-2 border rounded-lg outline-none bg-gray-100 dark:bg-gray-800 text-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <button
+                      type="submit"
+                      className="w-full py-2 bg-primary text-white rounded-lg font-bold hover:bg-blue-700 transition"
+                      disabled={loading}
+                    >
+                      {editRoom ? "Update Room" : "Create Room"}
+                    </button>
+                  </div>
+                  {error && (
+                    <div className="text-red-500 text-sm text-center">
+                      {error}
+                    </div>
+                  )}
+                </form>
               </div>
-              {error && (
-                <div className="text-red-500 text-sm text-center">{error}</div>
-              )}
-            </form>
-          </div>
-        </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

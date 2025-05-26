@@ -11,7 +11,9 @@ export default function DashboardHome() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchUsers = axios.get(`${import.meta.env.VITE_BASE_URL}/api/users`);
+    const fetchUsers = axios.get(
+      `${import.meta.env.VITE_BASE_URL}/api/regularUsers`
+    );
     const fetchRooms = axios.get(`${import.meta.env.VITE_BASE_URL}/api/rooms`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -22,16 +24,13 @@ export default function DashboardHome() {
       .then(([userRes, roomRes]) => {
         // Users
         const allUsers = userRes.data.data;
-        const filtered = allUsers.filter(
-          (user) => user.role?.name === "Regular User"
-        );
-        setData(filtered);
-        setCount(filtered.length);
+        setData(allUsers);
+        setCount(Array.isArray(allUsers) ? allUsers.length : 0);
 
         // Rooms
         const allRooms = roomRes.data.data;
         setRoomCount(Array.isArray(allRooms) ? allRooms.length : 0);
-        setRooms(Array.isArray(allRooms) ? allRooms : []); // <-- add this line
+        setRooms(Array.isArray(allRooms) ? allRooms : []);
 
         setLoading(false);
       })
