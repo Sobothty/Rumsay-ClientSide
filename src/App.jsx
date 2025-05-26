@@ -10,6 +10,9 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import DashboardHome from "./pages/DashboardHome";
 import AllRoom from "./pages/AllRoom";
 
+// import Categories from "./pages/admin/categories/categories";
+import Room from "./pages/categories/rooms/roomCategories";
+
 function App() {
   return (
     <BrowserRouter>
@@ -26,6 +29,11 @@ function App() {
           <Route index element={<DashboardHome />} />
           <Route path="rooms" element={<AllRoom />} />
         </Route>
+
+        {/* route categories */}
+        <Route path="/" element={<room />} />
+          <Route path="/categories/rooms" element={<Room />} />
+        <Route />
       </Routes>
     </BrowserRouter>
   );
