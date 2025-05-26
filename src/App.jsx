@@ -10,7 +10,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import DashboardHome from "./pages/admin/page/DashboardHome";
 import AllRoom from "./pages/admin/page/AllRoom";
 import  RoomTypes from "./pages/admin/page/RoomTypes";
-import { AllUsers } from "./pages/admin/page/AllUsers";
+import AllUsers  from "./pages/admin/page/AllUsers";
 
 // import Categories from "./pages/admin/categories/categories";
 import Room from "./pages/categories/rooms/roomCategories";
