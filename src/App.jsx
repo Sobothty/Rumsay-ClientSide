@@ -4,11 +4,13 @@ import "./App.css";
 import RootLayout from "./components/layout/RootLayout";
 import Homepage from "./pages/Homepage";
 import About from "./pages/About";
-import SignUp from "./pages/SignUp";
-import SignIn from "./pages/SignIn";
+import SignUp from "./pages/auth/SignUp";
+import SignIn from "./pages/auth/SignIn";
 import AdminDashboard from "./pages/admin/Dashboard";
-import DashboardHome from "./pages/DashboardHome";
-import AllRoom from "./pages/AllRoom";
+import DashboardHome from "./pages/admin/page/DashboardHome";
+import AllRoom from "./pages/admin/page/AllRoom";
+import  RoomTypes from "./pages/admin/page/RoomTypes";
+import { AllUsers } from "./pages/admin/page/AllUsers";
 
 // import Categories from "./pages/admin/categories/categories";
 import Room from "./pages/categories/rooms/roomCategories";
@@ -28,6 +30,8 @@ function App() {
         <Route path="admin" element={<AdminDashboard />}>
           <Route index element={<DashboardHome />} />
           <Route path="rooms" element={<AllRoom />} />
+          <Route path="room-types" element={<RoomTypes />} />
+          <Route path="users" element={<AllUsers />} />
         </Route>
 
         {/* route categories */}
