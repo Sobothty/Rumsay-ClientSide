@@ -15,7 +15,7 @@ export const Reservation = () => {
       }
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/bookings`,
+          `${import.meta.env.VITE_BASE_URL}/api/admin/booking-rooms`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -23,7 +23,7 @@ export const Reservation = () => {
           }
         );
         if (res.data && Array.isArray(res.data.data)) {
-          setBookings(res.data.data);
+          setBookings(res.data.data.reverse());
         } else if (res.data && res.data.data) {
           setBookings([res.data.data]);
         } else {
@@ -51,6 +51,36 @@ export const Reservation = () => {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-6">Booking List</h2>
+      {/* Status summary blocks */}
+      <div className="flex flex-wrap gap-4 mb-8">
+        <div className="flex-1 min-w-[160px] bg-yellow-100 border-l-4 border-yellow-400 rounded-xl p-4 flex items-center gap-3 shadow">
+          <span className="inline-block w-3 h-3 rounded-full bg-yellow-400"></span>
+          <div>
+            <div className="text-lg font-bold text-yellow-800">
+              {bookings.filter((b) => b.booking_status === "pending").length}
+            </div>
+            <div className="text-sm text-yellow-700">Pending</div>
+          </div>
+        </div>
+        <div className="flex-1 min-w-[160px] bg-green-100 border-l-4 border-green-400 rounded-xl p-4 flex items-center gap-3 shadow">
+          <span className="inline-block w-3 h-3 rounded-full bg-green-400"></span>
+          <div>
+            <div className="text-lg font-bold text-green-800">
+              {bookings.filter((b) => b.booking_status === "confirmed").length}
+            </div>
+            <div className="text-sm text-green-700">Confirmed</div>
+          </div>
+        </div>
+        <div className="flex-1 min-w-[160px] bg-red-100 border-l-4 border-red-400 rounded-xl p-4 flex items-center gap-3 shadow">
+          <span className="inline-block w-3 h-3 rounded-full bg-red-400"></span>
+          <div>
+            <div className="text-lg font-bold text-red-800">
+              {bookings.filter((b) => b.booking_status === "cancelled").length}
+            </div>
+            <div className="text-sm text-red-700">Cancelled</div>
+          </div>
+        </div>
+      </div>
       {loading ? (
         <div>Loading...</div>
       ) : (
@@ -99,7 +129,7 @@ export const Reservation = () => {
                           ? "bg-yellow-100 text-yellow-800"
                           : booking.booking_status === "confirmed"
                           ? "bg-green-100 text-green-800"
-                          : "bg-gray-200 text-gray-700"
+                          : "bg-red-500 text-white"
                       }`}
                     >
                       {booking.booking_status}
