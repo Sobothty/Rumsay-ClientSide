@@ -9,12 +9,13 @@ import SignIn from "./pages/auth/SignIn";
 import AdminDashboard from "./pages/admin/Dashboard";
 import DashboardHome from "./pages/admin/page/DashboardHome";
 import AllRoom from "./pages/admin/page/AllRoom";
-import  RoomTypes from "./pages/admin/page/RoomTypes";
-import AllUsers  from "./pages/admin/page/AllUsers";
+import RoomTypes from "./pages/admin/page/RoomTypes";
+import AllUsers from "./pages/admin/page/AllUsers";
 
 // import Categories from "./pages/admin/categories/categories";
-import Room from "./pages/categories/rooms/roomCategories";
+import Categories from "./pages/categories/categories";
 import { Reservation } from "./pages/admin/page/Reservation";
+import Filter from "./pages/filter/filter";
 
 function App() {
   return (
@@ -26,7 +27,9 @@ function App() {
           <Route path="about-us" element={<About />} />
           <Route path="sign-up" element={<SignUp />} />
           <Route path="sign-in" element={<SignIn />} />
-          
+          <Route path="categories" element={<Categories />}>
+            <Route path=":roomType" element={<Filter />} />
+          </Route>
         </Route>
         {/* Admin pages without RootLayout (no navbar/footer) */}
         <Route path="admin" element={<AdminDashboard />}>
@@ -37,10 +40,9 @@ function App() {
           <Route path="bookings" element={<Reservation />} />
         </Route>
 
-        {/* route categories */}
-        <Route path="/" element={<room />} />
-          <Route path="/categories/rooms" element={<Room />} />
-        <Route />
+        {/* filter route */}
+
+        {/* Catch-all route for 404 */}
       </Routes>
     </BrowserRouter>
   );
