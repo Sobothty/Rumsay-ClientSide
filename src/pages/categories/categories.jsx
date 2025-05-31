@@ -1,8 +1,13 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import Room from "./rooms/roomCategories";
+import { Link, Outlet, useParams } from "react-router-dom";
 
 const Categories = () => {
+  const { roomType } = useParams(); // this will be undefined on /categories, but defined on /categories/:roomType
+
+  if (roomType) {
+    return <Outlet />;
+  }
+
   return (
     <div>
       <section className="bg-white py-[50px]">
@@ -10,65 +15,62 @@ const Categories = () => {
           Explore Our Hotel
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mx-auto">
-          {/* Rooms */}
-          <Link to="/categories/rooms">
+          {/* Room Types */}
+          <Link to="/categories/normal">
             <div className="flex flex-col items-center rounded-lg hover:shadow-lg transition cursor-pointer relative">
               <img
                 src="src/assets/categories/category-room.jpg"
-                alt="Room"
+                alt="Normal Room"
                 className="w-full h-40 object-cover rounded-xl"
               />
-              {/* Overlapping span */}
               <span className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 text-sm rounded">
-                Room
+                Normal Room
               </span>
             </div>
           </Link>
 
-          {/* Facilities */}
-          <Link to="/facilities">
+          <Link to="/categories/vip">
             <div className="flex flex-col items-center rounded-lg hover:shadow-lg transition cursor-pointer relative">
               <img
-                src="src/assets/categories/category-facility.jpg"
-                alt="Facilities"
+                src="src/assets/categories/category-room.jpg"
+                alt="VIP Room"
                 className="w-full h-40 object-cover rounded-xl"
               />
               <span className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 text-sm rounded">
-                Facilities
+                VIP Room
               </span>
             </div>
           </Link>
 
-          {/* Dining */}
-          <Link to="/dining">
-            <div className="flex flex-col items-center rounded-lg hover:shadow-lg transition cursor-pointer relative ">
-              <img
-                src="src/assets/categories/dining-category.jpg"
-                alt="Dining"
-                className="w-full h-40 object-cover rounded-xl"
-              />
-              <span className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 text-sm rounded">
-                Dining
-              </span>
-            </div>
-           
-          </Link>
-
-          {/* Attractions */}
-          <Link to="/attractions">
+          <Link to="/categories/premium">
             <div className="flex flex-col items-center rounded-lg hover:shadow-lg transition cursor-pointer relative">
               <img
-                src="src/assets/categories/nearby-category.jpg"
-                alt="Attractions"
+                src="src/assets/categories/category-room.jpg"
+                alt="Premium Room"
                 className="w-full h-40 object-cover rounded-xl"
               />
-              <span className="absolute bottom-2 left-2 bg-opacity-60 text-white bg-black px-2 py-1 text-sm rounded">
-                Nearby
+              <span className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 text-sm rounded">
+                Premium Room
+              </span>
+            </div>
+          </Link>
+
+          <Link to="/categories/luxury">
+            <div className="flex flex-col items-center rounded-lg hover:shadow-lg transition cursor-pointer relative">
+              <img
+                src="src/assets/categories/category-room.jpg"
+                alt="Luxury Room"
+                className="w-full h-40 object-cover rounded-xl"
+              />
+              <span className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 text-sm rounded">
+                Luxury Room
               </span>
             </div>
           </Link>
         </div>
       </section>
+
+      <Outlet />
     </div>
   );
 };
