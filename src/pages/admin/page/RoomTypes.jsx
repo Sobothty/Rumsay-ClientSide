@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Plus, Pencil, Trash2, Image as LucideImage } from "lucide-react";
+import { toast } from "react-toastify";
 
 const RoomTypes = () => {
   const [roomTypes, setRoomTypes] = useState([]);
@@ -111,6 +112,7 @@ const RoomTypes = () => {
           payload,
           config
         );
+        toast.success("Room type updated successfully!");
       } else {
         // Create
         await axios.post(
@@ -118,11 +120,16 @@ const RoomTypes = () => {
           payload,
           config
         );
+        toast.success("Room type created successfully!");
       }
       await fetchRoomTypes();
       setShowModal(false);
     } catch (err) {
       setError(
+        err.response?.data?.message ||
+          "Failed to save room type. Please check your input."
+      );
+      toast.error(
         err.response?.data?.message ||
           "Failed to save room type. Please check your input."
       );
@@ -143,8 +150,9 @@ const RoomTypes = () => {
         }
       );
       setRoomTypes((prev) => prev.filter((rt) => rt.id !== id));
+      toast.success("Room type deleted successfully!");
     } catch (err) {
-      alert(
+      toast.error(
         err.response?.data?.message ||
           "Failed to delete room type. Please try again."
       );
