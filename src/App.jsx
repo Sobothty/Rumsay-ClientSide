@@ -14,6 +14,7 @@ import AllUsers  from "./pages/admin/page/AllUsers";
 
 // import Categories from "./pages/admin/categories/categories";
 import Room from "./pages/categories/rooms/roomCategories";
+import { Reservation } from "./pages/admin/page/Reservation";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           <Route path="rooms" element={<AllRoom />} />
           <Route path="room-types" element={<RoomTypes />} />
           <Route path="users" element={<AllUsers />} />
+          <Route path="bookings" element={<Reservation />} />
         </Route>
 
         {/* route categories */}
