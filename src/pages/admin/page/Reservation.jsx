@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export const Reservation = () => {
   const [bookings, setBookings] = useState([]);
@@ -40,12 +41,71 @@ export const Reservation = () => {
 
   const handleEdit = (bookingId) => {
     // TODO: Implement edit logic or navigation
-    alert(`Edit booking ${bookingId}`);
+    toast.info(`Edit booking ${bookingId}`);
   };
 
-  const handleDelete = (bookingId) => {
-    // TODO: Implement delete logic
-    alert(`Delete booking ${bookingId}`);
+  // Confirm booking
+  const handleConfirm = async (bookingId) => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      toast.error("No auth token found.");
+      return;
+    }
+    try {
+      await axios.post(
+        `${
+          import.meta.env.VITE_BASE_URL
+        }/api/admin/booking-rooms/${bookingId}/confirm`,
+        null,
+        {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setBookings((prev) =>
+        prev.map((b) =>
+          b.id === bookingId ? { ...b, booking_status: "confirmed" } : b
+        )
+      );
+      toast.success("Booking confirmed successfully!");
+    } catch (err) {
+      toast.error("Failed to confirm booking.");
+    }
+  };
+
+  const handleDelete = async (bookingId) => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      toast.error("No auth token found.");
+      return;
+    }
+    if (!window.confirm("Are you sure you want to cancel this booking?")) {
+      return;
+    }
+    try {
+      await axios.post(
+        `${
+          import.meta.env.VITE_BASE_URL
+        }/api/admin/booking-rooms/${bookingId}/cancel`,
+        null,
+        {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setBookings((prev) =>
+        prev.map((b) =>
+          b.id === bookingId ? { ...b, booking_status: "cancelled" } : b
+        )
+      );
+      toast.success("Booking cancelled successfully!");
+    } catch (err) {
+      toast.error("Failed to cancel booking.");
+    }
   };
 
   return (
@@ -82,7 +142,68 @@ export const Reservation = () => {
         </div>
       </div>
       {loading ? (
-        <div>Loading...</div>
+        <div className="flex flex-col items-center justify-center min-h-[300px]">
+          {/* Spinner */}
+          <div className="mb-4">
+            <svg
+              className="animate-spin h-10 w-10 text-blue-500"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+              ></path>
+            </svg>
+          </div>
+          {/* Skeleton Table */}
+          <div className="overflow-x-auto w-full">
+            <table className="min-w-full bg-white dark:bg-gray-900 rounded-xl shadow border border-gray-200 dark:border-gray-700">
+              <thead>
+                <tr className="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-gray-800 dark:to-gray-900">
+                  <th className="py-3 px-4 text-left font-semibold">
+                    Booking ID
+                  </th>
+                  <th className="py-3 px-4 text-left font-semibold">
+                    Username
+                  </th>
+                  <th className="py-3 px-4 text-left font-semibold">
+                    Room Numbers
+                  </th>
+                  <th className="py-3 px-4 text-left font-semibold">Status</th>
+                  <th className="py-3 px-4 text-center font-semibold">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...Array(5)].map((_, idx) => (
+                  <tr
+                    key={idx}
+                    className="border-t border-gray-100 dark:border-gray-800"
+                  >
+                    {[...Array(5)].map((__, colIdx) => (
+                      <td key={colIdx} className="py-3 px-4">
+                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-full"></div>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-4 text-gray-400 text-sm">Loading bookings...</div>
+        </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white dark:bg-gray-900 rounded-xl shadow border border-gray-200 dark:border-gray-700">
@@ -137,16 +258,17 @@ export const Reservation = () => {
                   </td>
                   <td className="py-3 px-4 flex gap-2 justify-center">
                     <button
-                      onClick={() => handleEdit(booking.id)}
-                      className="px-4 py-1 rounded-lg bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
+                      onClick={() => handleConfirm(booking.id)}
+                      className="px-4 py-1 rounded-lg bg-green-500 text-white font-semibold hover:bg-green-600 transition"
+                      disabled={booking.booking_status === "confirmed"}
                     >
-                      Edit
+                      Confirm
                     </button>
                     <button
                       onClick={() => handleDelete(booking.id)}
                       className="px-4 py-1 rounded-lg bg-red-500 text-white font-semibold hover:bg-red-600 transition"
                     >
-                      Delete
+                      Cancel
                     </button>
                   </td>
                 </tr>

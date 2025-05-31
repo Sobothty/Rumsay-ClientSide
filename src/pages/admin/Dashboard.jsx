@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import {
   ChartAreaIcon,
@@ -12,6 +12,8 @@ import {
   Users,
 } from "lucide-react";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const sidebarItems = [
   {
@@ -49,6 +51,9 @@ const sidebarItems = [
 export default function AdminDashboard() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef();
 
   useEffect(() => {
     // Validate admin role
@@ -85,6 +90,37 @@ export default function AdminDashboard() {
     };
     checkRole();
   }, [navigate]);
+
+  useEffect(() => {
+    // Fetch profile for dropdown
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      axios
+        .get(`${import.meta.env.VITE_BASE_URL}/api/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => setProfile(res.data?.data || null))
+        .catch(() => setProfile(null));
+    }
+  }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false);
+      }
+    }
+    if (profileOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [profileOpen]);
+
+  const handleSignOut = () => {
+    localStorage.removeItem("authToken");
+    window.location.href = "/";
+  };
 
   const linkClass = (path) =>
     `group relative flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300 font-medium
@@ -144,17 +180,52 @@ export default function AdminDashboard() {
               className="w-full max-w-xs px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
             />
           </div>
-          <div className="flex items-center gap-4">
-            <button className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-gray-700 transition">
+          <div className="flex items-center gap-4 relative" ref={profileRef}>
+            <button
+              className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-gray-700 transition"
+              onClick={() => setProfileOpen((v) => !v)}
+            >
               <User2 className="w-7 h-7 text-gray-500 dark:text-gray-300" />
             </button>
+            {profileOpen && (
+              <div className="absolute right-0 top-12 z-50 min-w-[220px] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-5 flex flex-col gap-2 animate-fade-in">
+                <div className="mb-2">
+                  <div className="font-semibold text-gray-900 dark:text-white text-base">
+                    {profile?.display_name ||
+                      profile?.username ||
+                      profile?.email ||
+                      "User"}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    {profile?.role?.name || profile?.role || "Role"}
+                  </div>
+                </div>
+                <button
+                  onClick={handleSignOut}
+                  className="mt-2 px-4 py-2 rounded-lg bg-red-500 text-white font-semibold hover:bg-red-600 transition"
+                >
+                  Sign Out
+                </button>
+              </div>
+            )}
           </div>
         </header>
         {/* Routed main content */}
         <main className="flex-1 overflow-y-auto p-8">
-          <Outlet />
+          <Outlet context={{ toast }} />
         </main>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </div>
   );
 }

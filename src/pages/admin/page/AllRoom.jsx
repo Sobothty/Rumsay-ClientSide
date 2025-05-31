@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Plus, Pencil, Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 const AllRoom = () => {
   const [selectedType, setSelectedType] = useState("Regular");
@@ -104,7 +105,7 @@ const AllRoom = () => {
           desc: form.desc,
         };
         await fetch(
-          `${import.meta.env.VITE_BASE_URL}/api/rooms/${editRoom.id}`,
+          `${import.meta.env.VITE_BASE_URL}/api/admin/rooms/${editRoom.id}`,
           {
             method: "PUT",
             headers: {
@@ -119,6 +120,7 @@ const AllRoom = () => {
         const data = await res.json();
         setRooms(Array.isArray(data.data) ? data.data : []);
         setShowModal(false);
+        toast.success("Room updated successfully!");
       } else {
         // Create
         const payload = {
@@ -139,9 +141,11 @@ const AllRoom = () => {
         const data = await res.json();
         setRooms(Array.isArray(data.data) ? data.data : []);
         setShowModal(false);
+        toast.success("Room created successfully!");
       }
     } catch (err) {
       setError("Failed to save room. Please check your input.");
+      toast.error("Failed to save room. Please check your input.");
     }
   };
 
@@ -150,7 +154,7 @@ const AllRoom = () => {
     if (!window.confirm("Are you sure you want to delete this room?")) return;
     try {
       await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}/api/rooms/${roomId}`,
+        `${import.meta.env.VITE_BASE_URL}/api/admin/rooms/${roomId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -158,8 +162,9 @@ const AllRoom = () => {
         }
       );
       setRooms((prev) => prev.filter((room) => room.id !== roomId));
+      toast.success("Room deleted successfully!");
     } catch (err) {
-      alert(
+      toast.error(
         err.response?.data?.message ||
           "Failed to delete room. Please try again."
       );
