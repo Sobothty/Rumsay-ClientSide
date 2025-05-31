@@ -1,6 +1,6 @@
-import React from "react";
 
-const roomCategoriesChild = () => {
+
+const RoomCategoriesChild = () => {
   return (
     <div className="container mx-auto px-4 py-[50px] flex gap-8">
 
@@ -36,4 +36,4 @@ const roomCategoriesChild = () => {
   );
 };
 
-export default roomCategoriesChild;
+export default RoomCategoriesChild;

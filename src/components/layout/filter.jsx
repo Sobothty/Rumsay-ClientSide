@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import NormalRoom from "../categories/rooms/roomCategories";
+import { useState } from "react";
+import roomCategoriesChild from "../../pages/categories/roomCategories";
 
 // Sample room data
 const rooms = [
@@ -51,7 +51,7 @@ const SingleHotel = () => {
         </h1>
 
         <div >
-          <NormalRoom />
+          <Room />
         </div>
       </main>
     </div>

@@ -1,5 +1,4 @@
-import DatePickerForm from "../components/DatePickerForm";
-import Categories from "./categories/categories";
+import Categories from "../components/Categories";
 import CheckInOut from "./checkInOut";
 
 export default function Homepage() {

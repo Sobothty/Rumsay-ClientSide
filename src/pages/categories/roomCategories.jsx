@@ -1,6 +1,6 @@
 // import React from "react";
-import RoomChild from "./roomCategoriesChild";
-import CheckInOut from "../../checkInOut";
+import RoomCategoriesChild from "../../components/RoomCard";
+import CheckInOut from "../checkInOut";
 
 const Room = () => {
   return (
@@ -8,7 +8,7 @@ const Room = () => {
       {/* <NavbarPage /> */}
       <div className="w-full m-auto max-w-7xl bg-gray-50">
         <CheckInOut />
-        <RoomChild />
+        <RoomCategoriesChild />
       </div>
       {/* <Footer /> */}
     </div>

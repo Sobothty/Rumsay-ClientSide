@@ -13,9 +13,9 @@ import RoomTypes from "./pages/admin/page/RoomTypes";
 import AllUsers from "./pages/admin/page/AllUsers";
 
 // import Categories from "./pages/admin/categories/categories";
-import Categories from "./pages/categories/categories";
+import Categories from "./components/Categories";
 import { Reservation } from "./pages/admin/page/Reservation";
-import Filter from "./pages/filter/filter";
+import SingleHotel from "./components/layout/filter";
 
 function App() {
   return (
@@ -28,7 +28,7 @@ function App() {
           <Route path="sign-up" element={<SignUp />} />
           <Route path="sign-in" element={<SignIn />} />
           <Route path="categories" element={<Categories />}>
-            <Route path=":roomType" element={<Filter />} />
+            <Route path=":roomType" element={<SingleHotel />} />
           </Route>
         </Route>
         {/* Admin pages without RootLayout (no navbar/footer) */}
