@@ -169,7 +169,7 @@ export default function NavbarPage() {
               }}
             >
               <Link
-                to="/admin"
+                to="/dashboard"
                 className="flex items-center gap-3 px-5 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-t-xl transition-all duration-200"
                 onClick={() => setUserMenuOpen(false)}
               >

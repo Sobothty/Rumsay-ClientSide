@@ -16,6 +16,7 @@ import AllUsers from "./pages/admin/page/AllUsers";
 import Categories from "./components/Categories";
 import { Reservation } from "./pages/admin/page/Reservation";
 import SingleHotel from "./components/layout/filter";
+import ProfileDashboard from "./pages/profileDashboard";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="about-us" element={<About />} />
           <Route path="sign-up" element={<SignUp />} />
           <Route path="sign-in" element={<SignIn />} />
+          <Route path="dashboard" element={<ProfileDashboard />} />
           <Route path="categories" element={<Categories />}>
             <Route path=":roomType" element={<SingleHotel />} />
           </Route>
