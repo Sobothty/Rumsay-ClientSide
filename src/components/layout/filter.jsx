@@ -1,61 +1,129 @@
 import { useState } from "react";
 import Room from "../../pages/categories/roomCategories";
 
-const roomTypes = ["Normal Room", "VIP Room", "Premium Rooms"];
+const roomTypes = ["Standard", "Deluxe", "Suite", "Family"];
+const priceRanges = [
+  { label: "$0 - $50", min: 0, max: 50 },
+  { label: "$51 - $100", min: 51, max: 100 },
+  { label: "$101+", min: 101, max: Infinity },
+];
+const amenitiesList = ["Free Wi-Fi", "Air Conditioning", "Bathtub", "Balcony", "Breakfast Included"];
+const guestOptions = [1, 2, 3, 4, 5];
 
 const SingleHotel = () => {
   const [selectedTypes, setSelectedTypes] = useState([]);
+  const [selectedPrice, setSelectedPrice] = useState(null);
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
+  const [guests, setGuests] = useState(null);
 
-  const handleTypeChange = (type) => {
-    setSelectedTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+  const toggleItem = (stateSetter, value) => {
+    stateSetter((prev) =>
+      prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]
     );
   };
 
   return (
-    <div className="flex min-h-screen justify-center pt-10">
-      <div className="flex w-full max-w-7xl">
+    <div className="flex min-h-screen justify-center pt-10 bg-gray-50">
+      <div className="flex w-full max-w-7xl px-4">
         {/* Sidebar */}
-        <aside className="w-72 p-8 bg-white shadow-xl rounded-2xl flex flex-col items-start mt-5 h-fit sticky top-25 transition-all duration-300">
-          <h2 className="text-3xl font-black mb-8 text-blue-700 tracking-tight drop-shadow-sm">
-            Filter Rooms
-          </h2>
-          <div className="flex flex-col gap-5 w-full">
+        <aside className="w-72 p-6 bg-white shadow-xl rounded-2xl flex flex-col items-start mt-5 h-fit sticky top-24">
+          <h2 className="text-2xl font-extrabold mb-6 text-[#2a1a4a]">Filter Rooms</h2>
+
+          {/* Room Types */}
+          <div className="mb-6 w-full">
+            <h3 className="text-lg font-semibold mb-3">Room Type</h3>
             {roomTypes.map((type) => (
-              <label
-                key={type}
-                className={`flex items-center gap-4 px-5 py-3 rounded-xl cursor-pointer transition-all duration-200 text-lg font-semibold ${
-                  selectedTypes.includes(type)
-                    ? "bg-blue-500 text-white shadow-md"
-                    : "bg-blue-50 hover:bg-blue-100 text-blue-800"
-                }`}
-              >
+              <label key={type} className="block text-sm mb-2 cursor-pointer">
                 <input
                   type="checkbox"
+                  className="mr-2 accent-[#2a1a4a]"
                   checked={selectedTypes.includes(type)}
-                  onChange={() => handleTypeChange(type)}
-                  className="accent-blue-600 w-5 h-5 rounded border-2 border-blue-400 focus:ring-2 focus:ring-blue-400 transition"
+                  onChange={() => toggleItem(setSelectedTypes, type)}
                 />
-                <span>{type}</span>
+                {type}
               </label>
             ))}
           </div>
+
+          {/* Price Range */}
+          <div className="mb-6 w-full">
+            <h3 className="text-lg font-semibold mb-3">Price Range</h3>
+            {priceRanges.map((range, i) => (
+              <label key={i} className="block text-sm mb-2 cursor-pointer">
+                <input
+                  type="radio"
+                  className="mr-2 accent-[#2a1a4a]"
+                  name="price"
+                  checked={selectedPrice?.min === range.min}
+                  onChange={() => setSelectedPrice(range)}
+                />
+                {range.label}
+              </label>
+            ))}
+          </div>
+
+          {/* Amenities */}
+          <div className="mb-6 w-full">
+            <h3 className="text-lg font-semibold mb-3">Amenities</h3>
+            {amenitiesList.map((item) => (
+              <label key={item} className="block text-sm mb-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="mr-2 accent-[#2a1a4a]"
+                  checked={selectedAmenities.includes(item)}
+                  onChange={() => toggleItem(setSelectedAmenities, item)}
+                />
+                {item}
+              </label>
+            ))}
+          </div>
+
+          {/* Number of Guests */}
+          <div className="mb-6 w-full">
+            <h3 className="text-lg font-semibold mb-3">Guests</h3>
+            <select
+              className="w-full p-2 border border-gray-300 rounded-md text-sm"
+              value={guests || ""}
+              onChange={(e) => setGuests(Number(e.target.value))}
+            >
+              <option value="">Select guests</option>
+              {guestOptions.map((num) => (
+                <option key={num} value={num}>{num} Guest{num > 1 && 's'}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Clear Filters Button */}
           <button
-            className="mt-10 w-full py-3 bg-blue-600 text-white rounded-xl font-bold shadow hover:bg-blue-700 transition disabled:opacity-50"
-            onClick={() => setSelectedTypes([])}
-            disabled={selectedTypes.length === 0}
+            className="mt-6 w-full py-2 bg-[#2a1a4a] text-white rounded-lg font-semibold hover:bg-[#1d1335] transition disabled:opacity-50 text-sm"
+            onClick={() => {
+              setSelectedTypes([]);
+              setSelectedPrice(null);
+              setSelectedAmenities([]);
+              setGuests(null);
+            }}
+            disabled={
+              selectedTypes.length === 0 &&
+              !selectedPrice &&
+              selectedAmenities.length === 0 &&
+              !guests
+            }
           >
-            Clear Filters
+            Clear All Filters
           </button>
         </aside>
+
         {/* Main content */}
-        <main className="flex-1 p-12">
-          <h1 className="text-4xl font-extrabold mb-10 text-gray-800 drop-shadow">
-            {selectedTypes.length === 0 ? "All Room" : selectedTypes.join(", ")}{" "}
+        <main className="flex-1 p-6 lg:p-12">
+          <h1 className="text-3xl font-bold mb-6 text-gray-800">
+            Available Rooms
           </h1>
-          <div>
-            <Room filterTypes={selectedTypes} />
-          </div>
+          <Room
+            filterTypes={selectedTypes}
+            priceRange={selectedPrice}
+            amenities={selectedAmenities}
+            guests={guests}
+          />
         </main>
       </div>
     </div>
