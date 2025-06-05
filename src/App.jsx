@@ -4,6 +4,7 @@ import "./App.css";
 import RootLayout from "./components/layout/RootLayout";
 import Homepage from "./pages/Homepage";
 import About from "./pages/About";
+import Contact from "./pages/Contact";
 import SignUp from "./pages/auth/SignUp";
 import SignIn from "./pages/auth/SignIn";
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -25,6 +26,7 @@ function App() {
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Homepage />} />
           <Route path="about-us" element={<About />} />
+          <Route path="contact-us" element={<Contact />} />
           <Route path="sign-up" element={<SignUp />} />
           <Route path="sign-in" element={<SignIn />} />
           <Route path="categories" element={<Categories />}>
