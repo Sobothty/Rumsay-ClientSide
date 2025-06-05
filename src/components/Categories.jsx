@@ -11,7 +11,7 @@ const Categories = () => {
   return (
     <div>
       <section className="bg-white py-[50px]">
-        <h2 className="text-2xl pt-2 font-bold text-gray-800 mb-6">
+        <h2 className="text-3xl pt-2 font-semibold text-gray-800 mb-[60px]">
           Explore Our Hotel
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mx-auto">

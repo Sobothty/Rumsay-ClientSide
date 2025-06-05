@@ -1,9 +1,41 @@
 import Categories from "../components/Categories";
 import CheckInOut from "./checkInOut";
+import AllRooms from "./AllRooms";
+import React from "react";
+import {
+  FaConciergeBell,
+  FaKey,
+  FaDumbbell,
+  FaWifi,
+  FaParking,
+  FaTshirt,
+  FaUsers,
+  FaCar,
+  FaDog,
+  FaSwimmer,
+  FaUtensils,
+  FaSpa,
+} from "react-icons/fa";
+
+const amenities = [
+  { icon: <FaConciergeBell />, label: "Concierge" },
+  { icon: <FaKey />, label: "Digital Key" },
+  { icon: <FaDumbbell />, label: "Fitness Center" },
+  { icon: <FaWifi />, label: "Free Internet Access" },
+  { icon: <FaParking />, label: "Free Parking" },
+  { icon: <FaTshirt />, label: "Laundry" },
+  { icon: <FaUsers />, label: "Meeting Facilities" },
+  { icon: <FaCar />, label: "Valet Parking" },
+  { icon: <FaDog />, label: "Pet Friendly" },
+  { icon: <FaSwimmer />, label: "Pool" },
+  { icon: <FaUtensils />, label: "Restaurant On-Site" },
+  { icon: <FaConciergeBell />, label: "Room Service" }, // Reuse this icon
+  { icon: <FaSpa />, label: "Spa" },
+];
 
 export default function Homepage() {
   return (
-    <main className="w-full m-auto max-w-7xl bg-gray-50 ">
+    <main className="w-full m-auto max-w-7xl ">
       {/* Hero Section */}
 
       <section className=" w-full h-[200px] md:h-[300px] lg:h-[500px] bg-[url('src/assets/banner.jpg')] bg-cover bg-center flex items-center justify-center rounded-2xl mt-10 shadow-lg relative">
@@ -20,7 +52,7 @@ export default function Homepage() {
       </section>
 
       {/* checkin checkout guests and room */}
-      <section>
+      <section className="mb-[30px]">
         <CheckInOut />
       </section>
 
@@ -28,6 +60,24 @@ export default function Homepage() {
 
       <section>
         <Categories />
+      </section>
+
+      {/* Amenities Section */}
+      <section className="bg-white py-16 text-[#2a1a4a]">
+        <h2 className="text-3xl font-semibold mb-[70px]">Ameneties</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-4">
+          {amenities.map((item, index) => (
+            <div key={index} className="flex items-center gap-8 text-left">
+              <div className="text-2xl text-[#2a1a4a] opacity-80">{item.icon}</div>
+              <span className="text-lg">{item.label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* all rooms section */}
+      <section>
+        <AllRooms />
       </section>
     </main>
   );
