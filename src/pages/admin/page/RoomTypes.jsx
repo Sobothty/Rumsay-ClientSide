@@ -17,6 +17,9 @@ const RoomTypes = () => {
   });
   const [error, setError] = useState("");
 
+  // Add a new state for form loading
+  const [formLoading, setFormLoading] = useState(false);
+
   // Fetch all room types
   useEffect(() => {
     fetchRoomTypes();
@@ -79,6 +82,7 @@ const RoomTypes = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setFormLoading(true); // Start loading
     try {
       let payload;
       let config = {
@@ -86,22 +90,18 @@ const RoomTypes = () => {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
       };
+
+      // Prepare FormData for all cases to match your API (see Postman screenshot)
+      payload = new FormData();
+      payload.append("type", form.type);
+      payload.append("price", form.price);
+      payload.append("capacity", form.capacity);
+      payload.append("description", form.desc); // Use "description" key as in your API
       if (form.image) {
-        payload = new FormData();
-        payload.append("type", form.type);
-        payload.append("price", form.price);
-        payload.append("capacity", form.capacity);
-        payload.append("desc", form.desc);
         payload.append("image", form.image);
-        config.headers["Content-Type"] = "multipart/form-data";
-      } else {
-        payload = {
-          type: form.type,
-          price: form.price,
-          capacity: form.capacity,
-          desc: form.desc,
-        };
       }
+
+      config.headers["Content-Type"] = "multipart/form-data";
 
       if (editType) {
         // Update
@@ -125,6 +125,8 @@ const RoomTypes = () => {
       await fetchRoomTypes();
       setShowModal(false);
     } catch (err) {
+      // Debugging: log the error and response
+      console.error("Room type create error:", err, err?.response);
       setError(
         err.response?.data?.message ||
           "Failed to save room type. Please check your input."
@@ -133,6 +135,8 @@ const RoomTypes = () => {
         err.response?.data?.message ||
           "Failed to save room type. Please check your input."
       );
+    } finally {
+      setFormLoading(false); // End loading
     }
   };
 
@@ -194,7 +198,7 @@ const RoomTypes = () => {
                   >
                     <div className="flex items-center gap-4 mb-3">
                       <div className="w-20 h-20 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-gray-700">
-                        {rt.image ? (
+                        {rt.image_url ? (
                           <img
                             src={rt.image_url}
                             alt={rt.type}
@@ -217,7 +221,7 @@ const RoomTypes = () => {
                       <div className="flex-1">
                         <div className="text-xs text-gray-500">Price</div>
                         <div className="font-semibold text-blue-700 dark:text-blue-200">
-                          {rt.price ? `฿${rt.price}` : "-"}
+                          {rt.price ? `$${rt.price}` : "-"}
                         </div>
                       </div>
                       <div className="flex-1">
@@ -259,7 +263,18 @@ const RoomTypes = () => {
                 <h3 className="text-xl font-bold mb-4">
                   {editType ? "Edit Room Type" : "Add Room Type"}
                 </h3>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4 relative">
+                  {/* Modern loading overlay */}
+                  {formLoading && (
+                    <div className="absolute inset-0 bg-white/80 dark:bg-gray-900/80 flex items-center justify-center z-20 rounded-xl">
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-primary border-solid"></div>
+                        <span className="text-primary font-semibold mt-2">
+                          Saving...
+                        </span>
+                      </div>
+                    </div>
+                  )}
                   <div>
                     <label className="block text-sm font-medium mb-1">
                       Type
@@ -339,7 +354,7 @@ const RoomTypes = () => {
                     <button
                       type="submit"
                       className="w-full py-2 bg-primary text-white rounded-lg font-bold hover:bg-blue-700 transition"
-                      disabled={loading}
+                      disabled={loading || formLoading}
                     >
                       {editType ? "Update Type" : "Create Type"}
                     </button>

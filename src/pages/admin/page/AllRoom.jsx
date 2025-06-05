@@ -42,10 +42,22 @@ const AllRoom = () => {
       });
   }, []);
 
+  useEffect(() => {
+    // Only keep dark mode sync logic, no theme button or state here
+    const theme = localStorage.getItem("theme") || "light";
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, []);
+
   // Filter rooms by selected type
   const filteredRooms = rooms.filter(
     (room) => room.room_type?.type === selectedType
   );
+
+  // Find selected room type object and its capacity
+  const selectedRoomTypeObj = roomTypes.find((rt) => rt.type === selectedType);
+  const selectedTypeCapacity = selectedRoomTypeObj?.capacity || 0;
+  const selectedTypeRoomCount = filteredRooms.length;
+  const isAddDisabled = selectedTypeRoomCount >= selectedTypeCapacity;
 
   // Handle open modal for create/edit
   const openModal = (room = null) => {
@@ -64,7 +76,9 @@ const AllRoom = () => {
       const selectedRoomType = roomTypes.find((rt) => rt.type === selectedType);
       setForm({
         room_number: "",
-        desc: "",
+        desc: selectedRoomType
+          ? selectedRoomType.desc || selectedRoomType.description || ""
+          : "",
         room_type_id: selectedRoomType ? selectedRoomType.id : "",
         price: selectedRoomType ? selectedRoomType.price : "",
         is_active: true,
@@ -172,7 +186,7 @@ const AllRoom = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-4">
+    <div className="max-w-5xl mx-auto py-8 px-4 dark:text-gray-100 text-gray-800 bg-gray-50 dark:bg-gray-900">
       <h1 className="text-2xl font-bold mb-6">All Room Types</h1>
       {/* Loading spinner */}
       {loading ? (
@@ -186,18 +200,41 @@ const AllRoom = () => {
             {roomTypes.map((rt) => (
               <button
                 key={rt.id}
-                className={`flex flex-col items-center p-6 rounded-2xl shadow-lg bg-gradient-to-br from-blue-100 to-blue-300 transition-all duration-300 hover:scale-105 border-2 ${
+                className={`group flex flex-col items-center p-0 rounded-2xl shadow-lg bg-white dark:bg-gray-800 border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl overflow-hidden relative ${
                   selectedType === rt.type
                     ? "border-primary ring-2 ring-primary/30"
-                    : "border-transparent"
+                    : "border-gray-200 dark:border-gray-700"
                 }`}
                 onClick={() => setSelectedType(rt.type)}
+                style={{ minHeight: 260 }}
               >
-                <span className="text-4xl mb-2">🛏️</span>
-                <span className="text-lg font-semibold">{rt.type}</span>
-                <span className="text-sm text-gray-600 mt-1 text-center">
-                  {rt.desc || rt.description}
-                </span>
+                <div className="w-full h-40 bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+                  {rt.image_url ? (
+                    <img
+                      src={rt.image_url}
+                      alt={rt.type}
+                      className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                    />
+                  ) : (
+                    <span className="text-5xl">🛏️</span>
+                  )}
+                </div>
+                <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 w-full">
+                  <span className="text-lg font-bold mb-1 text-primary dark:text-blue-200 text-center">
+                    {rt.type}
+                  </span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300 mb-2 text-center">
+                    {rt.desc || rt.description}
+                  </span>
+                  <span className="inline-block px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-xs font-semibold mt-2">
+                    ${rt.price}
+                  </span>
+                </div>
+                {selectedType === rt.type && (
+                  <span className="absolute top-2 right-2 bg-primary text-white text-xs px-3 py-1 rounded-full shadow">
+                    Selected
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -206,12 +243,23 @@ const AllRoom = () => {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">{selectedType} Rooms</h2>
               <button
-                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg shadow hover:bg-blue-700 transition"
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg shadow hover:bg-blue-700 transition disabled:opacity-50"
                 onClick={() => openModal()}
+                disabled={isAddDisabled}
+                title={
+                  isAddDisabled
+                    ? "Cannot add more rooms: capacity reached"
+                    : "Add Room"
+                }
               >
                 <Plus size={18} /> Add Room
               </button>
             </div>
+            {isAddDisabled && (
+              <div className="text-blue-600 text-center mb-4 font-semibold">
+                The rooms in ({selectedType}) are full.
+              </div>
+            )}
             {loading ? (
               <div className="text-center py-8 text-gray-500">Loading...</div>
             ) : filteredRooms.length === 0 ? (
@@ -310,7 +358,7 @@ const AllRoom = () => {
                       name="room_number"
                       value={form.room_number}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
+                      className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800 dark:text-gray-100"
                       required
                     />
                   </div>
@@ -322,7 +370,7 @@ const AllRoom = () => {
                       name="desc"
                       value={form.desc}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
+                      className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800 dark:text-gray-100"
                       rows={2}
                       required
                     />
@@ -335,7 +383,7 @@ const AllRoom = () => {
                       name="room_type_id"
                       value={form.room_type_id}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800"
+                      className="w-full px-3 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800 dark:text-gray-100"
                       required
                     >
                       {roomTypes.map((rt) => (
@@ -355,7 +403,7 @@ const AllRoom = () => {
                       value={form.price}
                       readOnly
                       disabled
-                      className="w-full px-3 py-2 border rounded-lg outline-none bg-gray-100 dark:bg-gray-800 text-gray-500"
+                      className="w-full px-3 py-2 border rounded-lg outline-none bg-gray-100 dark:bg-gray-800 dark:text-gray-400 text-gray-500"
                     />
                   </div>
                   <div>
@@ -367,7 +415,7 @@ const AllRoom = () => {
                       value={form.is_active ? "Active" : "Inactive"}
                       readOnly
                       disabled
-                      className="w-full px-3 py-2 border rounded-lg outline-none bg-gray-100 dark:bg-gray-800 text-gray-500"
+                      className="w-full px-3 py-2 border rounded-lg outline-none bg-gray-100 dark:bg-gray-800 dark:text-gray-400 text-gray-500"
                     />
                   </div>
                   <div>

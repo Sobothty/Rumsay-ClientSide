@@ -154,7 +154,7 @@ const AllUsers = () => {
                 placeholder="Search by name..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 pr-4 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800 text-sm"
+                className="pl-10 pr-4 py-2 border rounded-lg outline-none bg-white dark:bg-gray-800 dark:text-gray-100 text-sm"
               />
               <Search
                 size={18}
@@ -187,7 +187,7 @@ const AllUsers = () => {
                 {filteredUsers.map((user) => (
                   <tr
                     key={user.id}
-                    className="transition-colors duration-300 hover:bg-blue-50 dark:hover:bg-gray-800"
+                    className="text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-800"
                   >
                     <td className="px-4 py-2 font-semibold">{user.name}</td>
                     <td className="px-4 py-2">{user.email}</td>

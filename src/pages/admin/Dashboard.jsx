@@ -10,6 +10,8 @@ import {
   User2,
   BedDouble,
   Users,
+  Sun,
+  Moon,
 } from "lucide-react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -53,7 +55,15 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem("theme") || "light"
+  );
   const profileRef = useRef();
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     // Validate admin role
@@ -131,11 +141,23 @@ export default function AdminDashboard() {
     }`;
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div
+      className={`flex h-screen bg-gray-50 dark:bg-gray-900 ${
+        theme === "dark" ? "dark:text-gray-100" : "text-gray-800"
+      }`}
+    >
       {/* Sidebar */}
-      <aside className="w-72 h-full p-0 bg-gradient-to-b from-white via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border-r border-gray-100 dark:border-gray-800 shadow-xl flex flex-col transition-all duration-300">
+      <aside
+        className={`w-72 h-full p-0 bg-gradient-to-b from-white via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border-r border-gray-100 dark:border-gray-800 shadow-xl flex flex-col transition-all duration-300 ${
+          theme === "dark" ? "dark:text-gray-100" : "text-gray-800"
+        }`}
+      >
         {/* Sidebar Header */}
-        <div className="px-7 py-6 border-b border-gray-100 dark:border-gray-800 flex flex-col items-center gap-2 bg-white/80 dark:bg-gray-900/80">
+        <div
+          className={`px-7 py-6 border-b border-gray-100 dark:border-gray-800 flex flex-col items-center gap-2 bg-white/80 dark:bg-gray-900/80 ${
+            theme === "dark" ? "dark:text-gray-100" : "text-gray-800"
+          }`}
+        >
           <img src="/Rumsay-nobg.png" alt="Logo" className="h-20 w-auto" />
         </div>
         {/* Sidebar Navigation */}
@@ -155,21 +177,31 @@ export default function AdminDashboard() {
             ))}
           </ul>
         </nav>
-        <div className="mt-auto text-center text-xs text-gray-400 dark:text-gray-600 pt-6 pb-4">
+        <div
+          className={`mt-auto text-center text-xs text-gray-400 dark:text-gray-100 pt-6 pb-4`}
+        >
           &copy; {new Date().getFullYear()} Rumsay. All rights reserved.
         </div>
       </aside>
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="flex items-center justify-between px-8 py-4 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 shadow-sm">
+        <header
+          className={`flex items-center justify-between px-8 py-4 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 shadow-sm ${
+            theme === "dark" ? "dark:text-gray-100" : "text-gray-800"
+          }`}
+        >
           <div className="flex items-center gap-4">
             <img
               src="/Rumsay-nobg.png"
               alt="Logo"
               className="h-10 w-auto hidden md:block"
             />
-            <span className="text-xl font-bold text-primary dark:text-white hidden md:block">
+            <span
+              className={`text-xl font-bold text-primary hidden md:block ${
+                theme === "dark" ? "dark:text-gray-100" : "text-gray-800"
+              }`}
+            >
               Rumsay Manangements
             </span>
           </div>
@@ -177,26 +209,67 @@ export default function AdminDashboard() {
             <input
               type="text"
               placeholder="Search..."
-              className="w-full max-w-xs px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
+              className={`w-full max-w-xs px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary/30 transition ${
+                theme === "dark" ? "dark:text-gray-100" : "text-gray-800"
+              }`}
             />
           </div>
           <div className="flex items-center gap-4 relative" ref={profileRef}>
+            {/* Theme toggle button */}
             <button
-              className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-gray-700 transition"
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow border transition bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 ${
+                theme === "dark" ? "dark:text-gray-100" : "text-gray-800"
+              }`}
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              title={
+                theme === "dark"
+                  ? "Switch to Light Mode"
+                  : "Switch to Dark Mode"
+              }
+            >
+              {theme === "dark" ? (
+                <>
+                  <Sun size={18} />{" "}
+                  <span className="hidden md:inline">Light Mode</span>
+                </>
+              ) : (
+                <>
+                  <Moon size={18} />{" "}
+                  <span className="hidden md:inline">Dark Mode</span>
+                </>
+              )}
+            </button>
+            <button
+              className={`p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-gray-700 transition ${
+                theme === "dark" ? "dark:text-gray-100" : "text-gray-800"
+              }`}
               onClick={() => setProfileOpen((v) => !v)}
             >
-              <User2 className="w-7 h-7 text-gray-500 dark:text-gray-300" />
+              <User2
+                className={`w-7 h-7 ${
+                  theme === "dark" ? "text-gray-100" : "text-gray-800"
+                }`}
+              />
             </button>
             {profileOpen && (
-              <div className="absolute right-0 top-12 z-50 min-w-[220px] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-5 flex flex-col gap-2 animate-fade-in">
+              <div
+                className={`absolute right-0 top-12 z-50 min-w-[220px] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-5 flex flex-col gap-2 animate-fade-in dark:text-gray-100 text-gray-800"
+                `}
+              >
                 <div className="mb-2">
-                  <div className="font-semibold text-gray-900 dark:text-white text-base">
+                  <div
+                    className={`font-semibold text-base text-gray-800 dark:text-gray-100`}
+                  >
                     {profile?.display_name ||
                       profile?.username ||
                       profile?.email ||
                       "User"}
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                  <div
+                    className={`text-xs ${
+                      theme === "dark" ? "text-gray-100" : "text-gray-500"
+                    }`}
+                  >
                     {profile?.role?.name || profile?.role || "Role"}
                   </div>
                 </div>
@@ -211,7 +284,11 @@ export default function AdminDashboard() {
           </div>
         </header>
         {/* Routed main content */}
-        <main className="flex-1 overflow-y-auto p-8">
+        <main
+          className={`flex-1 overflow-y-auto p-8 ${
+            theme === "dark" ? "dark:text-gray-100" : "text-gray-800"
+          }`}
+        >
           <Outlet context={{ toast }} />
         </main>
       </div>
