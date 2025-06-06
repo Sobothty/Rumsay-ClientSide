@@ -14,7 +14,7 @@ import RoomTypes from "./pages/admin/page/RoomTypes";
 import AllUsers from "./pages/admin/page/AllUsers";
 
 // import Categories from "./pages/admin/categories/categories";
-import Categories from "./components/Categories";
+import Categories from "./pages/Categories";
 import { Reservation } from "./pages/admin/page/Reservation";
 import SingleHotel from "./components/layout/filter";
 import ProfileDashboard from "./pages/profileDashboard";

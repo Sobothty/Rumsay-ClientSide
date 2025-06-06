@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Room from "../../pages/categories/roomCategories";
+import Categories from "../../pages/Categories";
 
 const roomTypes = ["Standard", "Deluxe", "Suite", "Family"];
 const priceRanges = [
@@ -118,7 +118,7 @@ const SingleHotel = () => {
           <h1 className="text-3xl font-bold mb-6 text-gray-800">
             Available Rooms
           </h1>
-          <Room
+          <Categories
             filterTypes={selectedTypes}
             priceRange={selectedPrice}
             amenities={selectedAmenities}

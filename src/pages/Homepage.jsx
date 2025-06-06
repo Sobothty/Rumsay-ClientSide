@@ -1,4 +1,4 @@
-import Categories from "../components/Categories";
+import Categories from "./Categories";
 import CheckInOut from "./checkInOut";
 import AllRooms from "./AllRooms";
 import Gallery from "../components/Gallery";
