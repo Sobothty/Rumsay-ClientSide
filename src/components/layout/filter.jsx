@@ -23,10 +23,10 @@ const SingleHotel = () => {
   };
 
   return (
-    <div className="flex min-h-screen justify-center pt-10 bg-gray-50">
+    <div className="flex min-h-screen justify-center pt-10">
       <div className="flex w-full max-w-7xl px-4">
         {/* Sidebar */}
-        <aside className="w-72 p-6 bg-white shadow-xl rounded-2xl flex flex-col items-start mt-5 h-fit sticky top-24">
+        <aside className="w-72 p-6 bg-white rounded-2xl flex flex-col items-start mt-5 h-fit sticky top-24">
           <h2 className="text-2xl font-extrabold mb-6 text-[#2a1a4a]">Filter Rooms</h2>
 
           {/* Room Types */}
