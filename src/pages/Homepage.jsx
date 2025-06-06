@@ -59,10 +59,8 @@ export default function Homepage() {
         </section>
 
         {/* categories */}
-
-        <section>
           <Categories />
-        </section>
+        
 
         {/* Amenities Section */}
         <section className="bg-white py-16 text-[#2a1a4a]">
